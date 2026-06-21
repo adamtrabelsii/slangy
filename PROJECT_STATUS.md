@@ -98,19 +98,23 @@ The full v1 vertical slice from the design spec is **implemented and type-checks
 ## What we need to do next 📋
 
 ### Immediate
-- [ ] **Initialize git history** — make the first commit (`.gitignore` already present;
-      confirm `node_modules`, `.env`, `dev-boot.log` are ignored).
-- [ ] **Run `npm run build`** to confirm a clean production build (only `tsc --noEmit` has
-      been verified so far).
+- [x] **Initialize git history** — first commit `6a5d686` (32 files; `node_modules`, `.env`,
+      `dev-boot.log`, `graphify-out/` ignored).
+- [x] **Run `npm run build`** — clean production build, all 8 routes generated, exit 0.
 - [ ] **Add a real `GEMINI_API_KEY`** locally and smoke-test the live AI tutor path
-      (the simulated fallback is the only path exercised so far).
+      (the simulated fallback is the only path exercised so far). _Needs your API key._
 - [ ] **Manual end-to-end pass** — onboard → complete a lesson (all 5 exercise types) →
       verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
       conversation → view profile.
 
 ### Content & polish
-- [ ] **Expand course content** — more lessons per skill, more vocab, more slang/idiom material.
-- [ ] **Add more AI practice scenarios.**
+- [x] **Expand course content** — now **4 units, 13 skills, 21 lessons, 84 vocab items**.
+      Added Family & People, Shopping, a whole "Everyday Life" unit (Daily Life, Feelings,
+      Making Plans), extra lessons on existing skills, and a new "Texting & Online" slang skill.
+      Every exercise `itemId` is backed by a VOCAB entry (verified). _(tsc + build green)_
+- [x] **Add more AI practice scenarios** — added Meeting Someone New, At the Doctor, and a
+      formal Job Interview (now 8 scenarios across all levels).
+- [ ] **Further content depth** — more lessons per skill, audio variety, harder advanced material.
 - [ ] **Accessibility & mobile polish** — keyboard nav, focus states, responsive layout checks.
 - [ ] **Empty/edge states** — out of hearts, no items due for review, network/API errors in chat.
 

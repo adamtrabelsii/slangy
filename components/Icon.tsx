@@ -11,6 +11,12 @@ import {
   Lock,
   Check,
   Star,
+  Users,
+  ShoppingBag,
+  Coffee,
+  Smile,
+  Rocket,
+  Smartphone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,6 +31,12 @@ const MAP: Record<string, LucideIcon> = {
   Lock,
   Check,
   Star,
+  Users,
+  ShoppingBag,
+  Coffee,
+  Smile,
+  Rocket,
+  Smartphone,
 };
 
 export function Icon({

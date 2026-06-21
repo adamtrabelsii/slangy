@@ -29,6 +29,33 @@ export const SCENARIOS: Scenario[] = [
       "You are a market vendor selling fruit and vegetables. Encourage the learner to ask prices and quantities.",
   },
   {
+    id: "introductions",
+    title: "Meeting Someone New",
+    emoji: "👋",
+    description: "Introduce yourself, your name, and where you're from.",
+    level: "beginner",
+    setup:
+      "You are a friendly person meeting the learner for the first time at a language exchange. Ask their name, where they're from, and what they do. Keep sentences short and beginner-friendly.",
+  },
+  {
+    id: "doctor",
+    title: "At the Doctor",
+    emoji: "🩺",
+    description: "Describe symptoms and understand simple advice.",
+    level: "intermediate",
+    setup:
+      "You are a calm doctor at a clinic. The learner is a patient describing how they feel. Ask about symptoms (¿qué te duele?) and give simple advice. Be patient and reassuring.",
+  },
+  {
+    id: "interview",
+    title: "Job Interview",
+    emoji: "💼",
+    description: "Talk about your experience and answer questions formally.",
+    level: "advanced",
+    setup:
+      "You are a hiring manager conducting a job interview in professional Spanish (using 'usted'). Ask about the learner's experience, strengths, and why they want the role. Keep it polite and formal.",
+  },
+  {
     id: "friends",
     title: "Real Talk: Hanging with Friends",
     emoji: "😎",
