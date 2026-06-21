@@ -1,10 +1,12 @@
 "use client";
 
-import { Flame, Star, BookOpen, Target, Mic, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Flame, Star, BookOpen, Target, Mic, ArrowRight, Check, LogOut, RefreshCw, ChevronDown } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
 import { XP_FOR_LEVEL, nextLevel, levelAtLeast } from "@/lib/types";
-import { getLanguage } from "@/lib/content/languages";
+import { LANGUAGES, getLanguage, type LangCode } from "@/lib/content/languages";
 import { avatarGrad, initials } from "@/lib/avatars";
 import { useT } from "@/lib/i18n";
 
@@ -20,9 +22,32 @@ export default function ProfilePage() {
   const avatar = useStore((s) => s.avatar);
   const learnFrom = useStore((s) => s.learnFrom);
   const learnTarget = useStore((s) => s.learnTarget);
-  const reset = useStore((s) => s.reset);
+  const setLearnFrom = useStore((s) => s.setLearnFrom);
+  const setTarget = useStore((s) => s.setTarget);
+  const logout = useStore((s) => s.logout);
+  const switchAccount = useStore((s) => s.switchAccount);
   const t = useT();
+  const router = useRouter();
+  const [editing, setEditing] = useState<null | "from" | "target">(null);
   const levelLabel = (l: typeof level) => t(`level_${l}`);
+
+  function pickLanguage(code: LangCode) {
+    if (editing === "from") setLearnFrom(code);
+    else if (editing === "target") setTarget(code);
+    setEditing(null);
+  }
+
+  function handleLogout() {
+    logout();
+    router.replace("/onboarding");
+  }
+
+  function handleSwitch() {
+    if (confirm(t("profile_switchConfirm"))) {
+      switchAccount();
+      router.replace("/onboarding");
+    }
+  }
 
   if (!hydrated) return <div className="py-20 text-center text-sg-sub">{t("loading")}</div>;
 
@@ -124,14 +149,45 @@ export default function ProfilePage() {
           <Badge icon={Mic} label={t("profile_slangPro")} earned={isAdvanced} />
         </div>
 
-        <button
-          onClick={() => {
-            if (confirm(t("profile_resetConfirm"))) reset();
-          }}
-          className="text-sm font-bold text-sg-primary-deep"
-        >
-          {t("profile_reset")}
-        </button>
+        {/* Languages */}
+        <p className="section-label mb-2">{t("profile_languages")}</p>
+        <div className="card mb-6 divide-y divide-sg-line overflow-hidden">
+          <LangRow
+            label={t("profile_iSpeak")}
+            current={learnFrom}
+            open={editing === "from"}
+            onToggle={() => setEditing(editing === "from" ? null : "from")}
+            onPick={pickLanguage}
+            disabledCode={learnTarget}
+          />
+          <LangRow
+            label={t("profile_learning")}
+            current={learnTarget}
+            open={editing === "target"}
+            onToggle={() => setEditing(editing === "target" ? null : "target")}
+            onPick={pickLanguage}
+            disabledCode={learnFrom}
+          />
+        </div>
+
+        {/* Account */}
+        <p className="section-label mb-2">{t("profile_account")}</p>
+        <div className="mb-4 flex flex-col gap-2.5">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 rounded-2xl glass px-4 py-3.5 text-sm font-extrabold text-sg-ink"
+          >
+            <LogOut size={18} className="text-sg-primary-deep" />
+            {t("profile_logout")}
+          </button>
+          <button
+            onClick={handleSwitch}
+            className="flex items-center gap-3 rounded-2xl glass px-4 py-3.5 text-sm font-extrabold text-sg-ink"
+          >
+            <RefreshCw size={18} className="text-sg-primary-deep" />
+            {t("profile_switchAccount")}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -159,6 +215,77 @@ function StatCard({
         {value}
       </div>
       <div className="text-[11px] font-bold text-sg-sub">{label}</div>
+    </div>
+  );
+}
+
+function LangRow({
+  label,
+  current,
+  open,
+  onToggle,
+  onPick,
+  disabledCode,
+}: {
+  label: string;
+  current: LangCode;
+  open: boolean;
+  onToggle: () => void;
+  onPick: (code: LangCode) => void;
+  disabledCode: LangCode;
+}) {
+  const lang = getLanguage(current);
+  return (
+    <div>
+      <button onClick={onToggle} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
+        <span
+          className="sg-grad grid h-10 w-10 flex-none place-items-center rounded-xl text-xs font-900 text-white"
+        >
+          {lang.monogram}
+        </span>
+        <span className="flex-1">
+          <span className="block text-[11px] font-bold uppercase tracking-wide text-sg-light">
+            {label}
+          </span>
+          <span className="block font-display text-[15px] font-900 text-sg-ink" dir={lang.rtl ? "rtl" : "ltr"}>
+            {lang.native}
+          </span>
+        </span>
+        <ChevronDown
+          size={18}
+          className="text-sg-light transition-transform"
+          style={{ transform: open ? "rotate(180deg)" : "none" }}
+        />
+      </button>
+
+      {open && (
+        <div className="animate-rise px-3 pb-3">
+          {LANGUAGES.map((l) => {
+            const selected = l.code === current;
+            const disabled = l.code === disabledCode;
+            return (
+              <button
+                key={l.code}
+                disabled={disabled}
+                onClick={() => onPick(l.code)}
+                className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-sg-amber/10 disabled:opacity-35"
+              >
+                <span
+                  className="grid h-8 w-8 flex-none place-items-center rounded-lg text-[10px] font-900 text-white"
+                  style={{ background: selected ? "var(--sg-grad)" : "#D7BFA8" }}
+                >
+                  {l.monogram}
+                </span>
+                <span className="flex-1 text-sm font-bold text-sg-ink" dir={l.rtl ? "rtl" : "ltr"}>
+                  {l.native}
+                  <span className="ml-1 text-xs font-medium text-sg-sub">{l.name}</span>
+                </span>
+                {selected && <Check size={16} className="text-sg-primary-deep" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

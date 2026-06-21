@@ -65,6 +65,9 @@ interface SlangyState {
   setHydrated: () => void;
   completeOnboarding: (payload: OnboardingPayload) => void;
   setTarget: (target: LangCode) => void;
+  setLearnFrom: (from: LangCode) => void;
+  logout: () => void;
+  switchAccount: () => void;
   rollDay: () => void;
   loseHeart: () => void;
   refillHearts: (cost?: number) => boolean;
@@ -114,6 +117,15 @@ export const useStore = create<SlangyState>()(
         }),
 
       setTarget: (learnTarget) => set({ learnTarget }),
+
+      setLearnFrom: (learnFrom) => set({ learnFrom }),
+
+      // Soft sign-out: return to onboarding but keep progress on this device,
+      // so logging back in resumes where you left off.
+      logout: () => set({ onboarded: false }),
+
+      // Fresh start for a different person: wipe local progress and account.
+      switchAccount: () => set({ ...initial, hydrated: true }),
 
       setLevel: (level) => set({ level }),
 

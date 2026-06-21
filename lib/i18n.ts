@@ -107,8 +107,13 @@ const en: Dict = {
   profile_streakBadge: "Streak x{n}",
   profile_wordsBadge: "{n} words",
   profile_slangPro: "Slang pro",
-  profile_reset: "Reset progress & sign out",
-  profile_resetConfirm: "Reset all progress and sign out? This can't be undone.",
+  profile_languages: "LANGUAGES",
+  profile_iSpeak: "I speak",
+  profile_learning: "I'm learning",
+  profile_account: "ACCOUNT",
+  profile_logout: "Log out",
+  profile_switchAccount: "Switch account",
+  profile_switchConfirm: "Start fresh for a different account? Your progress on this device will be cleared.",
 };
 
 const fr: Dict = {
@@ -210,8 +215,13 @@ const fr: Dict = {
   profile_streakBadge: "Série x{n}",
   profile_wordsBadge: "{n} mots",
   profile_slangPro: "Pro de l'argot",
-  profile_reset: "Réinitialiser & se déconnecter",
-  profile_resetConfirm: "Réinitialiser toute la progression et se déconnecter ? Action irréversible.",
+  profile_languages: "LANGUES",
+  profile_iSpeak: "Je parle",
+  profile_learning: "J'apprends",
+  profile_account: "COMPTE",
+  profile_logout: "Se déconnecter",
+  profile_switchAccount: "Changer de compte",
+  profile_switchConfirm: "Recommencer avec un autre compte ? Ta progression sur cet appareil sera effacée.",
 };
 
 const es: Dict = {
@@ -313,8 +323,13 @@ const es: Dict = {
   profile_streakBadge: "Racha x{n}",
   profile_wordsBadge: "{n} palabras",
   profile_slangPro: "Slang pro",
-  profile_reset: "Reiniciar progreso y cerrar sesión",
-  profile_resetConfirm: "¿Reiniciar todo el progreso y cerrar sesión? No se puede deshacer.",
+  profile_languages: "IDIOMAS",
+  profile_iSpeak: "Hablo",
+  profile_learning: "Estoy aprendiendo",
+  profile_account: "CUENTA",
+  profile_logout: "Cerrar sesión",
+  profile_switchAccount: "Cambiar de cuenta",
+  profile_switchConfirm: "¿Empezar de cero con otra cuenta? Se borrará tu progreso en este dispositivo.",
 };
 
 const ar: Dict = {
@@ -416,8 +431,13 @@ const ar: Dict = {
   profile_streakBadge: "سلسلة x{n}",
   profile_wordsBadge: "{n} كلمة",
   profile_slangPro: "محترف العامية",
-  profile_reset: "إعادة الضبط وتسجيل الخروج",
-  profile_resetConfirm: "إعادة ضبط كل التقدّم وتسجيل الخروج؟ لا يمكن التراجع.",
+  profile_languages: "اللغات",
+  profile_iSpeak: "أتحدّث",
+  profile_learning: "أتعلّم",
+  profile_account: "الحساب",
+  profile_logout: "تسجيل الخروج",
+  profile_switchAccount: "تبديل الحساب",
+  profile_switchConfirm: "البدء من جديد بحساب آخر؟ سيُحذف تقدّمك على هذا الجهاز.",
 };
 
 const DICTS: Record<LangCode, Dict> = { en, fr, es, ar };
