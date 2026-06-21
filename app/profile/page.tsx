@@ -3,15 +3,10 @@
 import { Flame, Star, BookOpen, Target, Mic, ArrowRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
-import { XP_FOR_LEVEL, nextLevel, levelAtLeast, type Level } from "@/lib/types";
+import { XP_FOR_LEVEL, nextLevel, levelAtLeast } from "@/lib/types";
 import { getLanguage } from "@/lib/content/languages";
 import { avatarGrad, initials } from "@/lib/avatars";
-
-const LEVEL_LABEL: Record<Level, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
-};
+import { useT } from "@/lib/i18n";
 
 export default function ProfilePage() {
   const hydrated = useStore((s) => s.hydrated);
@@ -26,8 +21,10 @@ export default function ProfilePage() {
   const learnFrom = useStore((s) => s.learnFrom);
   const learnTarget = useStore((s) => s.learnTarget);
   const reset = useStore((s) => s.reset);
+  const t = useT();
+  const levelLabel = (l: typeof level) => t(`level_${l}`);
 
-  if (!hydrated) return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
+  if (!hydrated) return <div className="py-20 text-center text-sg-sub">{t("loading")}</div>;
 
   const name = account?.name ?? "Tú";
   const wordsLearned = Object.keys(cards).length;
@@ -64,7 +61,7 @@ export default function ProfilePage() {
             <div className="font-display text-xl font-900 text-sg-ink">{name}</div>
             {account?.email && <div className="text-xs text-sg-sub">{account.email}</div>}
             <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-sg-amber/15 px-2.5 py-1 text-[11px] font-extrabold text-sg-primary-deep">
-              {LEVEL_LABEL[level]}
+              {levelLabel(level)}
               <span className="opacity-50">·</span>
               <span dir={from.rtl ? "rtl" : "ltr"}>{from.native}</span>
               <ArrowRight size={11} />
@@ -77,16 +74,16 @@ export default function ProfilePage() {
       <div className="px-5 pt-5">
         {/* Stat grid */}
         <div className="mb-5 grid grid-cols-2 gap-3">
-          <StatCard icon={Flame} value={streak} label="Día de racha" bg="rgba(234,88,12,.1)" border="rgba(234,88,12,.28)" color="#EA580C" />
-          <StatCard icon={Star} value={xp.toLocaleString()} label="XP total" bg="rgba(245,158,11,.14)" border="rgba(245,158,11,.32)" color="#B45309" />
-          <StatCard icon={BookOpen} value={wordsLearned} label="Palabras" bg="rgba(251,116,39,.1)" border="rgba(251,116,39,.28)" color="#FB7427" />
-          <StatCard icon={Target} value={mastered} label="Dominadas" bg="rgba(14,158,110,.12)" border="rgba(14,158,110,.3)" color="#0E9E6E" />
+          <StatCard icon={Flame} value={streak} label={t("stat_streak")} bg="rgba(234,88,12,.1)" border="rgba(234,88,12,.28)" color="#EA580C" />
+          <StatCard icon={Star} value={xp.toLocaleString()} label={t("stat_xp")} bg="rgba(245,158,11,.14)" border="rgba(245,158,11,.32)" color="#B45309" />
+          <StatCard icon={BookOpen} value={wordsLearned} label={t("stat_words")} bg="rgba(251,116,39,.1)" border="rgba(251,116,39,.28)" color="#FB7427" />
+          <StatCard icon={Target} value={mastered} label={t("stat_mastered")} bg="rgba(14,158,110,.12)" border="rgba(14,158,110,.3)" color="#0E9E6E" />
         </div>
 
         {/* Daily goal */}
         <div className="card mb-5 p-4">
           <div className="flex items-center justify-between text-xs font-bold text-sg-sub">
-            <span>Meta de hoy</span>
+            <span>{t("profile_today")}</span>
             <span>
               {todayXp}/{dailyGoalXp} XP
             </span>
@@ -100,14 +97,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Progress to next level */}
-        <p className="section-label mb-2">PROGRESO DE NIVEL</p>
+        <p className="section-label mb-2">{t("profile_levelProgress")}</p>
         <div className="card mb-5 p-4">
           {next ? (
             <>
               <div className="mb-2 flex justify-between text-xs font-bold">
-                <span className="text-sg-sub">{LEVEL_LABEL[level]}</span>
+                <span className="text-sg-sub">{levelLabel(level)}</span>
                 <span className="text-sg-primary-deep">
-                  {xpToNext} XP → {LEVEL_LABEL[next]}
+                  {t("profile_xpToNext", { n: xpToNext, level: levelLabel(next) })}
                 </span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-sg-line">
@@ -115,27 +112,25 @@ export default function ProfilePage() {
               </div>
             </>
           ) : (
-            <p className="text-sm text-sg-sub">
-              Llegaste al nivel máximo — todo el contenido Real Talk está desbloqueado.
-            </p>
+            <p className="text-sm text-sg-sub">{t("profile_maxLevel")}</p>
           )}
         </div>
 
         {/* Achievements */}
-        <p className="section-label mb-2">LOGROS</p>
+        <p className="section-label mb-2">{t("profile_achievements")}</p>
         <div className="mb-6 flex gap-2.5">
-          <Badge icon={Flame} label={`Racha x${streak}`} earned={streak > 0} />
-          <Badge icon={BookOpen} label={`${wordsLearned} palabras`} earned={wordsLearned > 0} />
-          <Badge icon={Mic} label="Slang pro" earned={isAdvanced} />
+          <Badge icon={Flame} label={t("profile_streakBadge", { n: streak })} earned={streak > 0} />
+          <Badge icon={BookOpen} label={t("profile_wordsBadge", { n: wordsLearned })} earned={wordsLearned > 0} />
+          <Badge icon={Mic} label={t("profile_slangPro")} earned={isAdvanced} />
         </div>
 
         <button
           onClick={() => {
-            if (confirm("¿Reiniciar todo el progreso y cerrar sesión? No se puede deshacer.")) reset();
+            if (confirm(t("profile_resetConfirm"))) reset();
           }}
           className="text-sm font-bold text-sg-primary-deep"
         >
-          Reiniciar progreso y cerrar sesión
+          {t("profile_reset")}
         </button>
       </div>
     </div>

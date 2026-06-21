@@ -10,9 +10,12 @@ import type {
   TranslateExercise,
   WordBankExercise,
 } from "@/lib/types";
-import { Volume2 } from "lucide-react";
+import { Volume2, Lightbulb } from "lucide-react";
 import { matchesAny, normalize, shuffle } from "@/lib/text";
 import { speak, ttsSupported } from "@/lib/tts";
+import { useT } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
+import { getLanguage } from "@/lib/content/languages";
 import { ExerciseShell, type Phase } from "./ExerciseShell";
 
 export function ExerciseView({
@@ -90,8 +93,14 @@ function Translate({
   onDone: (c: boolean) => void;
 }) {
   const [text, setText] = useState("");
-  const label =
-    ex.direction === "en-es" ? "Write this in Spanish" : "Write this in English";
+  const t = useT();
+  const learnFrom = useStore((s) => s.learnFrom);
+  const learnTarget = useStore((s) => s.learnTarget);
+  const langName =
+    ex.direction === "en-es"
+      ? getLanguage(learnTarget).native
+      : getLanguage(learnFrom).native;
+  const label = t("ex_write", { lang: langName });
 
   return (
     <ExerciseShell
@@ -116,12 +125,14 @@ function Translate({
             value={text}
             disabled={phase !== "answer"}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Escribe tu respuesta…"
+            placeholder={t("ex_typeAnswer")}
             rows={2}
-            className="w-full resize-none rounded-2xl border-[1.5px] border-sg-blue/35 bg-white p-4 text-lg font-bold text-sg-ink outline-none focus:border-sg-blue"
+            className="w-full resize-none rounded-2xl border-[1.5px] border-sg-primary/30 bg-white p-4 text-lg font-bold text-sg-ink outline-none focus:border-sg-primary"
           />
           {ex.hint && phase === "answer" && (
-            <p className="mt-2 text-sm text-sg-sub">💡 {ex.hint}</p>
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-sg-sub">
+              <Lightbulb size={14} className="text-sg-amber" /> {ex.hint}
+            </p>
           )}
         </div>
       )}
@@ -138,6 +149,7 @@ function WordBank({
   ex: WordBankExercise;
   onDone: (c: boolean) => void;
 }) {
+  const t = useT();
   const bankInit = useMemo(
     () => shuffle([...ex.answer, ...ex.distractors]).map((w, i) => ({ w, id: i })),
     [ex.id]
@@ -178,9 +190,7 @@ function WordBank({
               </button>
             ))}
             {picked.length === 0 && (
-              <span className="self-center px-2 text-sm text-sg-light">
-                Toca las palabras para construir la frase
-              </span>
+              <span className="self-center px-2 text-sm text-sg-light">{t("ex_tapToBuild")}</span>
             )}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -204,6 +214,7 @@ function WordBank({
 // ---- Listen --------------------------------------------------------------
 
 function Listen({ ex, onDone }: { ex: ListenExercise; onDone: (c: boolean) => void }) {
+  const t = useT();
   const choices = useMemo(() => shuffle(ex.choices), [ex.id]);
   const [sel, setSel] = useState<string | null>(null);
 
@@ -246,7 +257,7 @@ function Listen({ ex, onDone }: { ex: ListenExercise; onDone: (c: boolean) => vo
             className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-sg-amber/15 py-6 text-sg-primary-deep hover:bg-sg-amber/25"
           >
             <Volume2 size={28} />
-            <span className="font-display font-900">Escuchar otra vez</span>
+            <span className="font-display font-900">{t("ex_listenAgain")}</span>
           </button>
           <ChoiceGrid choices={choices} sel={sel} setSel={setSel} answer={ex.answer} phase={phase} />
           {phase !== "answer" && (
@@ -295,6 +306,7 @@ function ChoiceGrid({
 // ---- Match pairs ---------------------------------------------------------
 
 function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void }) {
+  const t = useT();
   const esList = useMemo(() => shuffle(ex.pairs.map((p) => p.es)), [ex.id]);
   const enList = useMemo(() => shuffle(ex.pairs.map((p) => p.en)), [ex.id]);
   const lookup = useMemo(() => {
@@ -329,7 +341,7 @@ function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void
 
   return (
     <div className="flex min-h-[60vh] flex-col">
-      <h2 className="mb-6 font-display text-2xl font-900 text-sg-ink">Empareja</h2>
+      <h2 className="mb-6 font-display text-2xl font-900 text-sg-ink">{t("ex_match")}</h2>
       <div className="grid flex-1 grid-cols-2 gap-3">
         <div className="space-y-3">
           {esList.map((es) => (
@@ -367,9 +379,7 @@ function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void
           ))}
         </div>
       </div>
-      <p className="mt-4 text-center text-sm text-sg-sub">
-        Toca una palabra en español y luego su traducción.
-      </p>
+      <p className="mt-4 text-center text-sm text-sg-sub">{t("ex_matchHint")}</p>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Volume2, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { speak, ttsSupported } from "@/lib/tts";
+import { useT } from "@/lib/i18n";
 
 export type Phase = "answer" | "correct" | "wrong";
 
@@ -23,6 +24,7 @@ export function ExerciseShell({
   onDone: (correct: boolean) => void;
   children: (phase: Phase) => React.ReactNode;
 }) {
+  const t = useT();
   const [phase, setPhase] = useState<Phase>("answer");
 
   function check() {
@@ -59,7 +61,7 @@ export function ExerciseShell({
       {phase === "answer" && (
         <div className="pt-6">
           <button className="btn-primary h-14 w-full text-base" disabled={!canCheck} onClick={check}>
-            Comprobar
+            {t("lesson_check")}
           </button>
         </div>
       )}
@@ -73,7 +75,7 @@ export function ExerciseShell({
             <CheckCircle2 size={26} style={{ color: "#0B7C56" }} />
             <div>
               <div className="text-[15px] font-extrabold" style={{ color: "#0B7C56" }}>
-                ¡Perfecto!
+                {t("lesson_perfect")}
               </div>
               {correctText && (
                 <div className="text-xs" style={{ color: "#0B7C56" }}>
@@ -87,7 +89,7 @@ export function ExerciseShell({
             style={{ background: "#0E9E6E", boxShadow: "0 8px 16px rgba(14,158,110,.3)" }}
             onClick={() => onDone(true)}
           >
-            Continuar <ArrowRight size={18} />
+            {t("lesson_continue")} <ArrowRight size={18} />
           </button>
         </div>
       )}
@@ -101,17 +103,17 @@ export function ExerciseShell({
             <XCircle size={26} style={{ color: "#C23B29" }} />
             <div>
               <div className="text-[15px] font-extrabold" style={{ color: "#C23B29" }}>
-                Casi…
+                {t("lesson_almost")}
               </div>
               {correctText && (
                 <div className="text-xs" style={{ color: "#C23B29" }}>
-                  Respuesta: {correctText}
+                  {t("lesson_answer")} {correctText}
                 </div>
               )}
             </div>
           </div>
           <button className="btn-danger flex h-13 w-full items-center justify-center gap-1 py-3.5 text-base" onClick={() => onDone(false)}>
-            Continuar <ArrowRight size={18} />
+            {t("lesson_continue")} <ArrowRight size={18} />
           </button>
         </div>
       )}

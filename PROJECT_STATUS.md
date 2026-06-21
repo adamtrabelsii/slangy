@@ -107,6 +107,20 @@ The full v1 vertical slice from the design spec is **implemented and type-checks
       verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
       conversation → view profile.
 
+### Localization, audio & motion
+- [x] **UI localized to the learner's native language** — new i18n layer ([lib/i18n.ts](lib/i18n.ts))
+      with en/fr/es/ar dictionaries, keyed by the learner's `from` language. All chrome (tab bar,
+      home, lesson, review, practice, profile, exercises) renders in English for English speakers,
+      French for French speakers, etc. Lesson *content* stays in the target language. Document
+      `lang`/`dir` follow the learner (RTL for Arabic) via [LangSync](components/LangSync.tsx).
+- [x] **Correct TTS voice** — [lib/tts.ts](lib/tts.ts) now picks a native voice for the *target*
+      language (es-ES/es-MX preferred) and waits for async voice loading instead of reading Spanish
+      words with the default English voice. Voice language follows `learnTarget`.
+- [x] **Typography & motion** — added **Baloo 2** rounded display font (Nunito body), framer-motion
+      onboarding welcome + step transitions, and a hand-drawn SVG title component at
+      [components/ui/hand-writing-text.tsx](components/ui/hand-writing-text.tsx) (path-draw animation,
+      respects `prefers-reduced-motion`). Guided by the ui-ux-pro-max skill (claymorphism direction).
+
 ### Design & onboarding
 - [x] **Full visual redesign** from the Claude Design file `Slangy.dc.html` (neuro-tone system) —
       light glassmorphism, bottom tab bar, Spanish chrome. Then **reworked to a warm "sunset"

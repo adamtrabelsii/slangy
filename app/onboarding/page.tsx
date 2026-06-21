@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,6 +16,7 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
+import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 import { useStore } from "@/lib/store";
 import type { Level } from "@/lib/types";
 import { LANGUAGES, getLanguage, hasCourse, type LangCode } from "@/lib/content/languages";
@@ -38,6 +40,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useStore((s) => s.completeOnboarding);
 
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [mode, setMode] = useState<"signup" | "login">("signup");
   const [name, setName] = useState("");
@@ -75,6 +78,46 @@ export default function OnboardingPage() {
     router.replace("/");
   }
 
+  if (!started) {
+    return (
+      <div className="flex min-h-[88vh] flex-col items-center justify-center text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 0.5, ease: [0.43, 0.13, 0.23, 0.96] }}
+          className="sg-grad grid h-16 w-16 place-items-center rounded-[22px] text-white"
+          style={{ boxShadow: "var(--sg-glow)" }}
+        >
+          <MessageCircle size={30} />
+        </motion.div>
+
+        <HandWrittenTitle title="Slangy" subtitle="Languages, the way they're actually spoken" />
+
+        <motion.button
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+          onClick={() => setStarted(true)}
+          className="btn-primary mt-2 h-14 w-full text-base"
+        >
+          Get started <ArrowRight size={18} />
+        </motion.button>
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.7, duration: 0.6 }}
+          onClick={() => {
+            setMode("login");
+            setStarted(true);
+          }}
+          className="mt-3 text-sm font-bold text-sg-sub"
+        >
+          I already have an account
+        </motion.button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-[88vh] flex-col">
       {/* Header: brand + progress */}
@@ -106,7 +149,13 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <div className="animate-rise flex flex-1 flex-col">
+      <motion.div
+        key={step}
+        initial={{ opacity: 0, x: 16 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.25 }}
+        className="flex flex-1 flex-col"
+      >
         {step === 0 && (
           <AuthStep
             mode={mode}
@@ -168,7 +217,7 @@ export default function OnboardingPage() {
             onFinish={finish}
           />
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

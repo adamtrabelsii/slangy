@@ -9,6 +9,7 @@ import { levelAtLeast, type Level, type Skill, type Unit } from "@/lib/types";
 import { getLanguage, hasCourse } from "@/lib/content/languages";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
+import { useT, type TFn } from "@/lib/i18n";
 import { Icon } from "@/components/Icon";
 
 // Warm accent per unit along the route.
@@ -28,13 +29,14 @@ export default function HomePage() {
   const streak = useStore((s) => s.streak);
   const gems = useStore((s) => s.gems);
   const hearts = useStore((s) => s.hearts);
+  const t = useT();
 
   useEffect(() => {
     if (hydrated && !onboarded) router.replace("/onboarding");
   }, [hydrated, onboarded, router]);
 
   if (!hydrated || !onboarded) {
-    return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
+    return <div className="py-20 text-center text-sg-sub">{t("loading")}</div>;
   }
 
   const due = countDue(cards);
@@ -59,7 +61,9 @@ export default function HomePage() {
           <Heart size={13} /> {hearts}
         </Pill>
         <div className="ml-auto flex flex-col items-end">
-          <span className="text-[9px] font-extrabold tracking-wider text-sg-light">META DIARIA</span>
+          <span className="text-[9px] font-extrabold tracking-wider text-sg-light">
+            {t("home_dailyGoal")}
+          </span>
           <span className="text-[11px] font-extrabold text-sg-primary-deep">
             {todayXp} / {dailyGoalXp} XP
           </span>
@@ -67,11 +71,13 @@ export default function HomePage() {
       </div>
 
       <div className="px-5 pt-5">
-        <p className="tagline">Camino de {target.native}</p>
-        <h1 className="mb-1 font-display text-3xl font-900 text-sg-ink">Sigue aprendiendo</h1>
+        <p className="tagline">
+          {t("home_tagline")} · {target.native}
+        </p>
+        <h1 className="mb-1 font-display text-3xl font-900 text-sg-ink">{t("home_keepLearning")}</h1>
 
         {!hasCourse(learnTarget) ? (
-          <ComingSoon langName={target.name} onSwitch={() => setTarget("es")} />
+          <ComingSoon langName={target.native} onSwitch={() => setTarget("es")} t={t} />
         ) : (
           <>
             <Link
@@ -79,8 +85,8 @@ export default function HomePage() {
               className="mb-3 mt-4 flex items-center justify-between rounded-2xl glass px-4 py-3"
             >
               <span className="flex items-center gap-2 text-sm font-extrabold text-sg-sub">
-                <Brain size={16} className="text-sg-primary" /> Repaso ·{" "}
-                <span className="text-sg-primary-deep">{due} pendientes</span>
+                <Brain size={16} className="text-sg-primary" /> {t("home_review")} ·{" "}
+                <span className="text-sg-primary-deep">{t("home_due", { n: due })}</span>
               </span>
               <ArrowRight size={16} className="text-sg-primary-deep" />
             </Link>
@@ -103,6 +109,7 @@ export default function HomePage() {
                   level={level}
                   completed={completed}
                   currentId={current?.id}
+                  t={t}
                 />
               ))}
             </div>
@@ -113,19 +120,28 @@ export default function HomePage() {
   );
 }
 
-function ComingSoon({ langName, onSwitch }: { langName: string; onSwitch: () => void }) {
+function ComingSoon({
+  langName,
+  onSwitch,
+  t,
+}: {
+  langName: string;
+  onSwitch: () => void;
+  t: TFn;
+}) {
   return (
     <div className="card mt-4 p-6 text-center">
       <div className="sg-grad mx-auto grid h-14 w-14 place-items-center rounded-2xl text-white" style={{ boxShadow: "var(--sg-glow)" }}>
         <Sparkles size={26} />
       </div>
-      <h2 className="mt-4 font-display text-xl font-900 text-sg-ink">{langName} llega pronto</h2>
+      <h2 className="mt-4 font-display text-xl font-900 text-sg-ink">
+        {t("comingSoon_title", { lang: langName })}
+      </h2>
       <p className="mx-auto mt-1 max-w-xs text-sm text-sg-sub">
-        Estamos creando el curso de {langName}. Mientras tanto, empieza con Español — está
-        completo y listo.
+        {t("comingSoon_body", { lang: langName })}
       </p>
       <button onClick={onSwitch} className="btn-primary mx-auto mt-5">
-        Empezar con Español <ArrowRight size={18} />
+        {t("comingSoon_cta")} <ArrowRight size={18} />
       </button>
     </div>
   );
@@ -159,6 +175,7 @@ function UnitBlock({
   level,
   completed,
   currentId,
+  t,
 }: {
   unit: Unit;
   index: number;
@@ -166,6 +183,7 @@ function UnitBlock({
   level: Level;
   completed: Record<string, number>;
   currentId?: string;
+  t: TFn;
 }) {
   const doneCount = unit.skills.filter((s) => completed[s.id] > 0).length;
   const allDone = doneCount === unit.skills.length;
@@ -191,6 +209,7 @@ function UnitBlock({
           unlocked={levelAtLeast(level, skill.minLevel)}
           done={completed[skill.id] > 0}
           isCurrent={skill.id === currentId}
+          t={t}
         />
       ))}
     </div>
@@ -203,12 +222,14 @@ function SkillRow({
   unlocked,
   done,
   isCurrent,
+  t,
 }: {
   skill: Skill;
   accent: string;
   unlocked: boolean;
   done: boolean;
   isCurrent: boolean;
+  t: TFn;
 }) {
   // Slang skills get the special "real talk" card.
   if (skill.slang) {
@@ -231,11 +252,11 @@ function SkillRow({
               className="sg-grad mt-2 inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-extrabold text-white"
               style={{ boxShadow: "var(--sg-glow)" }}
             >
-              Desbloqueado — empezar <ArrowRight size={13} />
+              {t("home_unlockedStart")} <ArrowRight size={13} />
             </Link>
           ) : (
             <div className="mt-1 flex items-center gap-1 text-[11px] text-sg-sub">
-              <Lock size={11} /> Llega a <b className="text-sg-primary-deep">Avanzado</b> para hablar como un local.
+              <Lock size={11} /> {t("home_reachAdvanced", { level: t("level_advanced") })}
             </div>
           )}
         </div>
@@ -283,11 +304,11 @@ function SkillRow({
           <div className="flex items-center justify-between gap-2">
             <div className="font-display text-[15px] font-900 text-sg-ink">{skill.title}</div>
             <span className="sg-grad flex flex-none items-center gap-1 rounded-full px-3 py-1.5 text-[9px] font-900 tracking-wide text-white">
-              EMPEZAR <ArrowRight size={11} />
+              {t("home_start")} <ArrowRight size={11} />
             </span>
           </div>
           <div className="mt-1 text-[11px] font-bold text-sg-primary-deep">
-            Estás aquí · {skill.blurb}
+            {t("home_here")} · {skill.blurb}
           </div>
         </div>
       ) : (
@@ -305,12 +326,12 @@ function SkillRow({
             >
               {done ? (
                 <>
-                  <Check size={11} strokeWidth={3} /> Completada
+                  <Check size={11} strokeWidth={3} /> {t("home_completed")}
                 </>
               ) : unlocked ? (
                 skill.blurb
               ) : (
-                "Bloqueado"
+                t("home_locked")
               )}
             </div>
           </div>

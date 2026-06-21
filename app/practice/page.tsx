@@ -6,6 +6,7 @@ import { SCENARIOS } from "@/lib/content/scenarios";
 import { levelAtLeast, type Scenario } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { speak, ttsSupported } from "@/lib/tts";
+import { useT } from "@/lib/i18n";
 
 interface Msg {
   role: "user" | "assistant";
@@ -27,19 +28,18 @@ const OPENERS: Record<string, string> = {
 export default function PracticePage() {
   const hydrated = useStore((s) => s.hydrated);
   const level = useStore((s) => s.level);
+  const t = useT();
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
-  if (!hydrated) return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
+  if (!hydrated) return <div className="py-20 text-center text-sg-sub">{t("loading")}</div>;
 
   if (!scenario) {
     return (
       <div className="space-y-5">
         <div>
-          <p className="tagline">Tutora IA · Habla</p>
-          <h1 className="font-display text-3xl font-900 text-sg-ink">Practica de verdad</h1>
-          <p className="mt-1 text-sm text-sg-sub">
-            Tu tutora responde en español y te corrige sobre la marcha.
-          </p>
+          <p className="tagline">{t("practice_tagline")}</p>
+          <h1 className="font-display text-3xl font-900 text-sg-ink">{t("practice_title")}</h1>
+          <p className="mt-1 text-sm text-sg-sub">{t("practice_subtitle")}</p>
         </div>
         <div className="space-y-3">
           {SCENARIOS.map((s) => {
@@ -69,7 +69,7 @@ export default function PracticePage() {
                   <span className="block text-sm text-sg-sub">{s.description}</span>
                   {!unlocked && (
                     <span className="mt-1 flex items-center gap-1 text-xs font-bold text-sg-primary-deep">
-                      <Lock size={12} /> Llega a {s.level} para desbloquear
+                      <Lock size={12} /> {t("practice_reach", { level: t(`level_${s.level}`) })}
                     </span>
                   )}
                 </span>
@@ -93,6 +93,7 @@ function Chat({
   level: string;
   onExit: () => void;
 }) {
+  const t = useT();
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: OPENERS[scenario.id] ?? "¡Hola! ¿Empezamos?" },
   ]);
@@ -131,7 +132,7 @@ function Chat({
     } catch {
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "Ups, algo salió mal. Inténtalo de nuevo." },
+        { role: "assistant", content: t("practice_error") },
       ]);
     } finally {
       setLoading(false);
@@ -153,11 +154,11 @@ function Chat({
           <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-sg-success" />
         </div>
         <div className="flex-1">
-          <div className="text-[15px] font-extrabold text-sg-ink">Lola · tutora IA</div>
+          <div className="text-[15px] font-extrabold text-sg-ink">{t("practice_tutor")}</div>
           <div className="text-[11px] text-sg-sub">{scenario.title}</div>
         </div>
         {simulated && (
-          <span className="chip bg-sg-amber/15 text-[11px] text-sg-primary-deep">PRACTICE MODE</span>
+          <span className="chip bg-sg-amber/15 text-[11px] text-sg-primary-deep">{t("practice_mode")}</span>
         )}
       </div>
 
@@ -229,7 +230,7 @@ function Chat({
               }
             }}
             rows={1}
-            placeholder="Escribe en español…"
+            placeholder={t("practice_placeholder")}
             className="flex-1 resize-none bg-transparent text-sm text-sg-ink outline-none"
           />
           <button
