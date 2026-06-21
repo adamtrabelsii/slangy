@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+npm-debug.log*
+.env
+.env*.local
+next-env.d.ts
+.vercel
+*.tsbuildinfo
+
+# dev / tooling artifacts
+dev-boot.log
+graphify-out/
