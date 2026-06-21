@@ -5,33 +5,45 @@ import { useRouter } from "next/navigation";
 import { useStore } from "@/lib/store";
 import type { Level } from "@/lib/types";
 
-const LEVELS: { id: Level; title: string; desc: string; emoji: string }[] = [
-  { id: "beginner", title: "Beginner", desc: "I'm starting from scratch.", emoji: "🌱" },
+const LEVELS: {
+  id: Level;
+  title: string;
+  desc: string;
+  emoji: string;
+  accent: string;
+}[] = [
+  {
+    id: "beginner",
+    title: "Beginner",
+    desc: "Empezar de cero · greetings & basics",
+    emoji: "🌱",
+    accent: "#FF6B5B",
+  },
   {
     id: "intermediate",
     title: "Intermediate",
-    desc: "I know the basics and some grammar.",
-    emoji: "🌿",
+    desc: "Hold a conversation · past & future",
+    emoji: "🚀",
+    accent: "#7C3AED",
   },
   {
     id: "advanced",
     title: "Advanced",
-    desc: "I'm comfortable — unlock slang & idioms.",
-    emoji: "🌳",
+    desc: "Unlocks slang & idioms — how locals talk",
+    emoji: "🔥",
+    accent: "#7C3AED",
   },
 ];
 
 const GOALS = [
-  { xp: 10, label: "Casual", desc: "10 XP / day" },
-  { xp: 30, label: "Regular", desc: "30 XP / day" },
-  { xp: 50, label: "Serious", desc: "50 XP / day" },
-  { xp: 80, label: "Intense", desc: "80 XP / day" },
+  { xp: 10, label: "Casual", sub: "5 min", emoji: "😌" },
+  { xp: 30, label: "Regular", sub: "10 min", emoji: "🙂" },
+  { xp: 50, label: "Serious", sub: "20 min", emoji: "🤩" },
 ];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useStore((s) => s.completeOnboarding);
-  const [step, setStep] = useState(0);
   const [level, setLevel] = useState<Level | null>(null);
   const [goal, setGoal] = useState<number>(30);
 
@@ -42,76 +54,92 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 py-6">
-      <div className="text-center">
-        <div className="text-5xl">🦜</div>
-        <h1 className="mt-2 font-display text-3xl font-900">
-          Welcome to Slang<span className="text-brand-400">y</span>
-        </h1>
-        <p className="mt-1 text-slate-400">
-          Learn Spanish the way people actually speak it.
-        </p>
+    <div className="flex min-h-[80vh] flex-col">
+      {/* Logo */}
+      <div className="mb-6 flex items-center gap-2.5">
+        <div
+          className="sg-grad flex h-10 w-10 items-center justify-center rounded-xl text-xl"
+          style={{ boxShadow: "var(--sg-glow-coral)" }}
+        >
+          💬
+        </div>
+        <span className="sg-grad-text font-display text-xl font-900 tracking-tight">Slangy</span>
       </div>
 
-      {step === 0 && (
-        <div className="space-y-3">
-          <h2 className="font-display text-lg font-900">How much Spanish do you know?</h2>
-          {LEVELS.map((l) => (
+      <p className="tagline">Spanish · the way it's actually spoken</p>
+      <h1 className="mt-1 font-display text-3xl font-900 leading-tight text-sg-ink">
+        ¿Por dónde
+        <br />
+        empezamos?
+      </h1>
+      <p className="mb-5 mt-2 text-sm text-sg-sub">
+        Pick your level — we'll set the right pace and unlock content as you climb.
+      </p>
+
+      <p className="section-label mb-3">Your level</p>
+      <div className="space-y-2.5">
+        {LEVELS.map((l) => {
+          const selected = level === l.id;
+          return (
             <button
               key={l.id}
               onClick={() => setLevel(l.id)}
-              className={`flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-colors ${
-                level === l.id
-                  ? "border-brand-400 bg-brand-500/10"
-                  : "border-ink-line bg-ink-soft hover:border-brand-500/50"
-              }`}
+              className="relative flex w-full items-center gap-3.5 rounded-[20px] border-2 p-4 text-left transition-transform active:scale-[0.99]"
+              style={{
+                background: selected ? "rgba(124,58,237,0.12)" : "rgba(255,255,255,0.3)",
+                borderColor: selected ? l.accent : "rgba(255,255,255,0.5)",
+              }}
             >
               <span className="text-3xl">{l.emoji}</span>
               <span className="flex-1">
-                <span className="block font-display font-900">{l.title}</span>
-                <span className="block text-sm text-slate-400">{l.desc}</span>
+                <span className="block font-display text-[15px] font-900 text-sg-ink">
+                  {l.title}
+                </span>
+                <span className="block text-xs text-sg-sub">{l.desc}</span>
               </span>
+              {selected && (
+                <span
+                  className="grid h-6 w-6 place-items-center rounded-full text-sm font-extrabold text-white"
+                  style={{ background: l.accent }}
+                >
+                  ✓
+                </span>
+              )}
             </button>
-          ))}
-          <button
-            className="btn-primary w-full"
-            disabled={!level}
-            onClick={() => setStep(1)}
-          >
-            Continue
-          </button>
-        </div>
-      )}
+          );
+        })}
+      </div>
 
-      {step === 1 && (
-        <div className="space-y-3">
-          <h2 className="font-display text-lg font-900">Set a daily goal</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {GOALS.map((g) => (
-              <button
-                key={g.xp}
-                onClick={() => setGoal(g.xp)}
-                className={`rounded-2xl border-2 p-4 text-left transition-colors ${
-                  goal === g.xp
-                    ? "border-brand-400 bg-brand-500/10"
-                    : "border-ink-line bg-ink-soft hover:border-brand-500/50"
-                }`}
-              >
-                <span className="block font-display font-900">{g.label}</span>
-                <span className="block text-sm text-slate-400">{g.desc}</span>
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button className="btn-ghost flex-1" onClick={() => setStep(0)}>
-              Back
+      <p className="section-label mb-2.5 mt-5">Daily goal</p>
+      <div className="flex gap-2">
+        {GOALS.map((g) => {
+          const selected = goal === g.xp;
+          return (
+            <button
+              key={g.xp}
+              onClick={() => setGoal(g.xp)}
+              className="flex-1 rounded-2xl border-2 py-3.5 text-center transition-transform active:scale-[0.98]"
+              style={{
+                background: selected ? "rgba(255,107,91,0.14)" : "rgba(255,255,255,0.3)",
+                borderColor: selected ? "#FF6B5B" : "rgba(255,255,255,0.5)",
+              }}
+            >
+              <div className="text-lg">{g.emoji}</div>
+              <div className="mt-1 text-[11px] font-extrabold text-sg-ink">{g.label}</div>
+              <div className="text-[9.5px] text-sg-sub">{g.sub}</div>
             </button>
-            <button className="btn-primary flex-[2]" onClick={finish}>
-              Start learning
-            </button>
-          </div>
-        </div>
-      )}
+          );
+        })}
+      </div>
+
+      <div className="mt-auto" />
+      <button
+        className="btn-primary mt-6 h-14 w-full text-base"
+        disabled={!level}
+        onClick={finish}
+      >
+        ¡Vamos! <span className="text-lg">→</span>
+      </button>
     </div>
   );
 }

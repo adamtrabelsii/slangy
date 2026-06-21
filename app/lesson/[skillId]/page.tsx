@@ -54,13 +54,13 @@ export default function LessonPage() {
     }
   }, [hydrated, skill, level, router]);
 
-  if (!hydrated) return <div className="py-20 text-center text-slate-400">Cargando…</div>;
+  if (!hydrated) return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
   if (!skill || !lesson) {
     return (
       <div className="py-20 text-center">
-        <p className="text-slate-400">Lesson not found.</p>
+        <p className="text-sg-sub">Lección no encontrada.</p>
         <Link href="/" className="btn-primary mt-4 inline-flex">
-          Back to learn
+          Volver
         </Link>
       </div>
     );
@@ -85,9 +85,9 @@ export default function LessonPage() {
     return (
       <div className="py-16 text-center">
         <div className="text-6xl">💔</div>
-        <h2 className="mt-4 font-display text-2xl font-900">You're out of hearts</h2>
-        <p className="mt-2 text-slate-400">
-          Refill to keep going, or come back later — they reset each day.
+        <h2 className="mt-4 font-display text-2xl font-900 text-sg-ink">Te quedaste sin vidas</h2>
+        <p className="mt-2 text-sg-sub">
+          Recarga para seguir, o vuelve más tarde — se reinician cada día.
         </p>
         <div className="mx-auto mt-6 flex max-w-xs flex-col gap-3">
           <button
@@ -95,10 +95,10 @@ export default function LessonPage() {
             disabled={gems < 30}
             onClick={() => refillHearts(30)}
           >
-            Refill hearts · 💎 30
+            Recargar vidas · 💎 30
           </button>
           <Link href="/" className="btn-ghost">
-            Quit for now
+            Salir por ahora
           </Link>
         </div>
       </div>
@@ -140,25 +140,25 @@ export default function LessonPage() {
   return (
     <div>
       {/* Progress header */}
-      <div className="mb-6 flex items-center gap-4">
-        <Link href="/" className="text-slate-400 hover:text-white" aria-label="Quit">
+      <div className="mb-6 flex items-center gap-3">
+        <Link href="/" className="text-sg-light hover:text-sg-ink" aria-label="Quit">
           <X size={26} />
         </Link>
-        <div className="h-3 flex-1 overflow-hidden rounded-full bg-ink-line">
+        <div className="h-3.5 flex-1 overflow-hidden rounded-full glass">
           <div
-            className="h-full rounded-full bg-brand-500 transition-all duration-300"
+            className="sg-grad h-full rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <span className="flex items-center gap-1 font-900 text-rose-300">
-          <Heart size={18} className="fill-rose-400 text-rose-400" />
+        <span className="flex items-center gap-1 font-900" style={{ color: "#E8425E" }}>
+          <Heart size={18} className="fill-rose-500 text-rose-500" />
           {hearts}
         </span>
       </div>
 
       {skill.slang && (
-        <div className="mb-4 inline-flex chip bg-brand-500/15 text-brand-200">
-          🔥 Real Talk · informal Spanish
+        <div className="chip sg-grad-soft mb-4 inline-flex text-sg-violet">
+          🔥 Real Talk · español informal
         </div>
       )}
 
@@ -186,35 +186,36 @@ function Summary({
   return (
     <div className="py-10 text-center">
       <div className="animate-float text-7xl">🎉</div>
-      <h1 className="mt-4 font-display text-3xl font-900">Lesson complete!</h1>
-      <p className="text-slate-400">{skillTitle}</p>
+      <h1 className="mt-4 font-display text-3xl font-900 text-sg-ink">¡Lección completada!</h1>
+      <p className="text-sg-sub">{skillTitle}</p>
 
       {leveledUpTo && (
-        <div className="mx-auto mt-6 max-w-md animate-pop rounded-2xl border-2 border-brand-400/50 bg-brand-500/15 p-4">
-          <div className="text-3xl">⭐️ Level up!</div>
-          <p className="mt-1 font-900 capitalize text-brand-100">
-            You reached {leveledUpTo}
-          </p>
-          <p className="text-sm text-brand-200/90">
+        <div
+          className="sg-grad-soft mx-auto mt-6 max-w-md animate-pop rounded-2xl p-4"
+          style={{ border: "2px solid rgba(124,58,237,.45)" }}
+        >
+          <div className="text-3xl">⭐️ ¡Subiste de nivel!</div>
+          <p className="mt-1 font-900 capitalize text-sg-violet">Llegaste a {leveledUpTo}</p>
+          <p className="text-sm text-sg-sub">
             {leveledUpTo === "advanced"
-              ? "Real Talk slang & idioms are now unlocked. 🔥"
-              : "New skills and scenarios are now unlocked."}
+              ? "Real Talk: slang & idioms desbloqueados. 🔥"
+              : "Nuevas habilidades y escenarios desbloqueados."}
           </p>
         </div>
       )}
 
       <div className="mx-auto mt-8 grid max-w-md grid-cols-3 gap-3">
-        <Stat label="XP earned" value={`+${xp}`} accent="text-amber-300" />
-        <Stat label="Accuracy" value={`${accuracy}%`} accent="text-brand-300" />
-        <Stat label="Words" value={`${total}`} accent="text-sky-300" />
+        <Stat label="XP" value={`+${xp}`} accent="#D99908" />
+        <Stat label="Precisión" value={`${accuracy}%`} accent="#0E9E79" />
+        <Stat label="Palabras" value={`${total}`} accent="#3B6FE8" />
       </div>
 
       <div className="mx-auto mt-8 flex max-w-md flex-col gap-3">
         <Link href="/" className="btn-primary">
-          Continue
+          Continuar
         </Link>
         <Link href="/review" className="btn-ghost">
-          Review these words 🧠
+          Repasar estas palabras 🧠
         </Link>
       </div>
     </div>
@@ -224,8 +225,10 @@ function Summary({
 function Stat({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
     <div className="card p-4">
-      <div className={`font-display text-2xl font-900 ${accent}`}>{value}</div>
-      <div className="text-xs font-bold uppercase tracking-wide text-slate-400">{label}</div>
+      <div className="font-display text-2xl font-900" style={{ color: accent }}>
+        {value}
+      </div>
+      <div className="text-xs font-bold uppercase tracking-wide text-sg-sub">{label}</div>
     </div>
   );
 }

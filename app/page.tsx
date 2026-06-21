@@ -3,12 +3,14 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock } from "lucide-react";
-import { SPANISH_COURSE } from "@/lib/content/spanish";
-import { levelAtLeast, type Skill } from "@/lib/types";
+import { SPANISH_COURSE, ALL_SKILLS } from "@/lib/content/spanish";
+import { levelAtLeast, type Level, type Skill, type Unit } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
 import { Icon } from "@/components/Icon";
+
+// Accent colors per unit position along the route.
+const UNIT_ACCENTS = ["#0E9E79", "#F1485B", "#7C3AED", "#3B6FE8"];
 
 export default function HomePage() {
   const router = useRouter();
@@ -19,158 +21,302 @@ export default function HomePage() {
   const cards = useStore((s) => s.cards);
   const todayXp = useStore((s) => s.todayXp);
   const dailyGoalXp = useStore((s) => s.dailyGoalXp);
+  const streak = useStore((s) => s.streak);
+  const gems = useStore((s) => s.gems);
+  const hearts = useStore((s) => s.hearts);
 
   useEffect(() => {
     if (hydrated && !onboarded) router.replace("/onboarding");
   }, [hydrated, onboarded, router]);
 
   if (!hydrated || !onboarded) {
-    return <div className="py-20 text-center text-slate-400">Cargando…</div>;
+    return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
   }
 
   const due = countDue(cards);
-  const goalPct = Math.min(100, Math.round((todayXp / dailyGoalXp) * 100));
+
+  // The single "you are here" skill: first unlocked, not-yet-completed skill.
+  const current = ALL_SKILLS.find(
+    (s) => levelAtLeast(level, s.minLevel) && !(completed[s.id] > 0)
+  );
 
   return (
-    <div className="space-y-8">
-      {/* Daily goal + review banner */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="card p-4">
-          <div className="flex items-center justify-between text-sm font-bold text-slate-300">
-            <span>Daily goal</span>
-            <span>
-              {todayXp}/{dailyGoalXp} XP
-            </span>
-          </div>
-          <div className="mt-2 h-3 overflow-hidden rounded-full bg-ink-line">
-            <div
-              className="h-full rounded-full bg-brand-500 transition-all"
-              style={{ width: `${goalPct}%` }}
-            />
-          </div>
-          <p className="mt-2 text-xs text-slate-400">
-            {goalPct >= 100 ? "¡Meta cumplida! 🎉" : "Keep going — finish a lesson."}
-          </p>
+    <div className="-mx-5 -mt-6">
+      {/* HUD */}
+      <div className="sticky top-0 z-10 flex items-center gap-2 glass-40 px-4 py-3">
+        <Pill bg="rgba(255,139,61,.16)" border="rgba(255,139,61,.4)" color="#E8722A">
+          <span className="animate-flame inline-block text-sm">🔥</span>
+          {streak}
+        </Pill>
+        <Pill bg="rgba(124,58,237,.14)" border="rgba(124,58,237,.35)" color="#7C3AED">
+          💎 {gems}
+        </Pill>
+        <Pill bg="rgba(255,84,112,.14)" border="rgba(255,84,112,.4)" color="#E8425E">
+          ❤️ {hearts}
+        </Pill>
+        <div className="ml-auto flex flex-col items-end">
+          <span className="text-[9px] font-extrabold tracking-wider text-sg-light">
+            DAILY GOAL
+          </span>
+          <span className="text-[11px] font-extrabold text-sg-coral-deep">
+            {todayXp} / {dailyGoalXp} XP
+          </span>
         </div>
+      </div>
+
+      <div className="px-5 pt-5">
+        <p className="tagline">Camino de español</p>
+        <h1 className="mb-1 font-display text-3xl font-900 text-sg-ink">Sigue aprendiendo</h1>
 
         <Link
           href="/review"
-          className="card flex items-center justify-between p-4 transition-colors hover:border-brand-500/50"
+          className="mb-3 mt-4 flex items-center justify-between rounded-2xl glass px-4 py-3"
         >
-          <div>
-            <div className="text-sm font-bold text-slate-300">Spaced review</div>
-            <div className="text-2xl font-900">
-              {due} <span className="text-base font-bold text-slate-400">due</span>
-            </div>
-          </div>
-          <span className="text-3xl">🧠</span>
+          <span className="text-sm font-extrabold text-sg-sub">
+            🧠 Repaso · <span className="text-sg-violet">{due} due</span>
+          </span>
+          <span className="text-xs font-extrabold text-sg-violet">Repasar →</span>
         </Link>
+
+        {/* LA RUTA timeline */}
+        <div className="relative pt-2">
+          <div
+            className="absolute bottom-7 left-[33px] top-7 w-[3px] rounded"
+            style={{
+              background:
+                "linear-gradient(180deg,#16C79A,#FF6B5B 48%,#7C3AED)",
+              opacity: 0.35,
+            }}
+          />
+          {SPANISH_COURSE.units.map((unit, ui) => (
+            <UnitBlock
+              key={unit.id}
+              unit={unit}
+              index={ui}
+              accent={UNIT_ACCENTS[ui % UNIT_ACCENTS.length]}
+              level={level}
+              completed={completed}
+              currentId={current?.id}
+            />
+          ))}
+        </div>
       </div>
-
-      {/* Course path */}
-      {SPANISH_COURSE.units.map((unit) => (
-        <section key={unit.id} className="space-y-4">
-          <div className="rounded-2xl bg-gradient-to-r from-brand-700/40 to-transparent px-4 py-3">
-            <h2 className="font-display text-lg font-900">{unit.title}</h2>
-            <p className="text-sm text-slate-300">{unit.description}</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-5">
-            {unit.skills.map((skill, i) => (
-              <SkillNode
-                key={skill.id}
-                skill={skill}
-                offset={i % 2 === 0 ? -1 : 1}
-                unlocked={levelAtLeast(level, skill.minLevel)}
-                completedCount={completed[skill.id] ?? 0}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
-
-      <p className="pt-2 text-center text-sm text-slate-500">
-        More units coming soon · keep your streak alive 🔥
-      </p>
     </div>
   );
 }
 
-function SkillNode({
+function Pill({
+  children,
+  bg,
+  border,
+  color,
+}: {
+  children: React.ReactNode;
+  bg: string;
+  border: string;
+  color: string;
+}) {
+  return (
+    <span
+      className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[13px] font-extrabold"
+      style={{ background: bg, border: `1px solid ${border}`, color }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function UnitBlock({
+  unit,
+  index,
+  accent,
+  level,
+  completed,
+  currentId,
+}: {
+  unit: Unit;
+  index: number;
+  accent: string;
+  level: Level;
+  completed: Record<string, number>;
+  currentId?: string;
+}) {
+  const doneCount = unit.skills.filter((s) => completed[s.id] > 0).length;
+  const allDone = doneCount === unit.skills.length;
+
+  return (
+    <div>
+      <div className={`flex items-center gap-2.5 ${index === 0 ? "mb-3.5" : "mb-3.5 mt-5"}`}>
+        <span
+          className="text-[10px] font-900 uppercase tracking-[1.5px]"
+          style={{ color: accent }}
+        >
+          {unit.title}
+        </span>
+        <span className="h-px flex-1 bg-sg-light/30" />
+        <span className="text-[10px] font-extrabold" style={{ color: accent }}>
+          {allDone ? `${doneCount}/${unit.skills.length} ✓` : `${doneCount}/${unit.skills.length}`}
+        </span>
+      </div>
+
+      {unit.skills.map((skill) => (
+        <SkillRow
+          key={skill.id}
+          skill={skill}
+          accent={accent}
+          unlocked={levelAtLeast(level, skill.minLevel)}
+          done={completed[skill.id] > 0}
+          isCurrent={skill.id === currentId}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SkillRow({
   skill,
-  offset,
+  accent,
   unlocked,
-  completedCount,
+  done,
+  isCurrent,
 }: {
   skill: Skill;
-  offset: number;
+  accent: string;
   unlocked: boolean;
-  completedCount: number;
+  done: boolean;
+  isCurrent: boolean;
 }) {
-  const done = completedCount > 0;
-  const total = skill.lessons.length;
+  // Slang skills get the special dashed "real talk" card treatment.
+  if (skill.slang) {
+    return (
+      <div className="relative mb-3.5 flex w-full items-center gap-3.5">
+        <div
+          className="z-[1] grid h-14 w-14 flex-none place-items-center rounded-[18px] text-white"
+          style={{
+            background: unlocked
+              ? "linear-gradient(145deg,#9333EA,#6B21A8)"
+              : "linear-gradient(145deg,#9333EA,#6B21A8)",
+            boxShadow: "0 5px 0 #4c1d95,0 9px 14px rgba(124,58,237,.32)",
+          }}
+        >
+          <Icon name={skill.icon} size={24} />
+        </div>
+        <div
+          className="sg-grad-soft flex-1 rounded-[18px] p-3.5"
+          style={{ border: "1.5px dashed rgba(124,58,237,.35)" }}
+        >
+          <div className="font-display text-sm font-900 text-sg-ink">{skill.title}</div>
+          {unlocked ? (
+            <Link
+              href={`/lesson/${skill.id}`}
+              className="sg-grad mt-2 inline-block rounded-full px-3.5 py-1.5 text-xs font-extrabold text-white"
+              style={{ boxShadow: "var(--sg-glow-coral)" }}
+            >
+              Desbloqueado — empezar ✦
+            </Link>
+          ) : (
+            <div className="mt-1 text-[11px] leading-[15px] text-sg-sub">
+              🔒 Llega a <b className="text-sg-violet">Avanzado</b> para hablar como un local.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-  const inner = (
-    <div
-      className="flex w-full max-w-md items-center gap-4 rounded-3xl border border-ink-line bg-ink-soft/70 p-4 backdrop-blur transition-transform hover:scale-[1.02]"
-      style={{ transform: `translateX(${offset * 18}px)` }}
-    >
+  const node = (
+    <>
       <div
-        className="relative grid h-16 w-16 shrink-0 place-items-center rounded-2xl"
-        style={{
-          background: unlocked ? `${skill.color}22` : "#1b2735",
-          boxShadow: `0 4px 0 0 ${unlocked ? skill.color + "55" : "#0c1622"}`,
-        }}
+        className="relative z-[1] grid flex-none place-items-center rounded-[18px] text-white"
+        style={
+          isCurrent
+            ? {
+                width: 60,
+                height: 60,
+                background: "var(--sg-grad)",
+                boxShadow: "var(--sg-glow-coral)",
+              }
+            : done
+            ? {
+                width: 54,
+                height: 54,
+                background: "linear-gradient(145deg,#3FE3B4,#0E9E79)",
+                boxShadow: "0 5px 0 #0E9E79,0 9px 14px rgba(22,199,154,.32)",
+              }
+            : unlocked
+            ? {
+                width: 54,
+                height: 54,
+                background: `linear-gradient(145deg,${accent},${accent})`,
+                boxShadow: `0 5px 0 ${accent}99`,
+              }
+            : { width: 54, height: 54, background: "#cfd4e6" }
+        }
       >
-        {unlocked ? (
-          <Icon name={skill.icon} size={28} className="text-white" />
-        ) : (
-          <Lock size={26} className="text-slate-500" />
-        )}
+        <span className={isCurrent ? "animate-pulse2 grid h-full w-full place-items-center rounded-[18px]" : ""}>
+          {unlocked ? (
+            <Icon name={skill.icon} size={isCurrent ? 28 : 24} />
+          ) : (
+            <span className="text-[22px]">🔒</span>
+          )}
+        </span>
         {done && (
-          <span className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-brand-500 text-xs">
+          <span className="absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-white text-[11px] text-sg-mint-deep shadow">
             ✓
           </span>
         )}
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className="truncate font-display text-base font-900">{skill.title}</h3>
-          {skill.slang && (
-            <span className="chip bg-brand-500/15 text-brand-200 text-[11px]">SLANG</span>
-          )}
-        </div>
-        <p className="truncate text-sm text-slate-400">{skill.blurb}</p>
-        {unlocked ? (
-          <div className="mt-2 flex items-center gap-2">
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink-line">
-              <div
-                className="h-full rounded-full"
-                style={{
-                  width: `${Math.min(100, (completedCount / total) * 100)}%`,
-                  background: skill.color,
-                }}
-              />
-            </div>
-            <span className="text-xs font-bold text-slate-400">
-              {Math.min(completedCount, total)}/{total}
+      {isCurrent ? (
+        <div
+          className="flex-1 rounded-[18px] bg-white p-3.5"
+          style={{ border: "2px solid #FF6B5B", boxShadow: "var(--sg-glow-coral)" }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="font-display text-[15px] font-900 text-sg-ink">{skill.title}</div>
+            <span className="sg-grad flex-none rounded-full px-3 py-1.5 text-[9px] font-900 tracking-wide text-white">
+              EMPEZAR →
             </span>
           </div>
-        ) : (
-          <p className="mt-1 text-xs font-bold text-amber-400">
-            Reach {skill.minLevel} to unlock
-          </p>
-        )}
-      </div>
-    </div>
+          <div className="mt-1 text-[11px] font-bold text-sg-coral-deep">
+            Estás aquí · {skill.blurb}
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`flex-1 rounded-2xl px-3.5 py-3 ${unlocked ? "glass" : "glass-25 flex items-center justify-between"}`}
+        >
+          <div>
+            <div
+              className={`text-sm font-extrabold ${unlocked ? "text-sg-ink" : "text-sg-light"}`}
+            >
+              {skill.title}
+            </div>
+            <div
+              className={`mt-0.5 text-[11px] font-bold ${
+                done ? "text-sg-mint-deep" : unlocked ? "text-sg-sub" : "text-sg-light"
+              }`}
+            >
+              {done ? "Completada ✓" : unlocked ? skill.blurb : "Bloqueado"}
+            </div>
+          </div>
+          {!unlocked && <span className="text-sm">🔒</span>}
+        </div>
+      )}
+    </>
   );
 
-  if (!unlocked) return <div className="w-full opacity-70">{inner}</div>;
-
+  if (unlocked) {
+    return (
+      <Link
+        href={`/lesson/${skill.id}`}
+        className="relative mb-3.5 flex w-full items-center gap-3.5"
+      >
+        {node}
+      </Link>
+    );
+  }
   return (
-    <Link href={`/lesson/${skill.id}`} className="w-full">
-      {inner}
-    </Link>
+    <div className="relative mb-3.5 flex w-full items-center gap-3.5 opacity-60">{node}</div>
   );
 }

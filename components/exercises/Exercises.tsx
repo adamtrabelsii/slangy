@@ -96,7 +96,7 @@ function Translate({
     <ExerciseShell
       prompt={
         <span>
-          <span className="block text-sm font-bold uppercase tracking-wide text-slate-400">
+          <span className="block text-xs font-bold uppercase tracking-wide text-sg-light">
             {label}
           </span>
           {ex.prompt}
@@ -115,12 +115,12 @@ function Translate({
             value={text}
             disabled={phase !== "answer"}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Type your answer…"
+            placeholder="Escribe tu respuesta…"
             rows={2}
-            className="w-full resize-none rounded-2xl border-2 border-ink-line bg-ink-soft p-4 text-lg font-bold text-white outline-none focus:border-brand-500"
+            className="w-full resize-none rounded-2xl border-[1.5px] border-sg-blue/35 bg-white p-4 text-lg font-bold text-sg-ink outline-none focus:border-sg-blue"
           />
           {ex.hint && phase === "answer" && (
-            <p className="mt-2 text-sm text-slate-400">💡 {ex.hint}</p>
+            <p className="mt-2 text-sm text-sg-sub">💡 {ex.hint}</p>
           )}
         </div>
       )}
@@ -165,7 +165,7 @@ function WordBank({
     >
       {(phase) => (
         <div>
-          <div className="min-h-[64px] flex-wrap gap-2 rounded-2xl border-2 border-dashed border-ink-line p-3 flex">
+          <div className="flex min-h-[64px] flex-wrap gap-2 rounded-2xl border-2 border-dashed border-sg-blue/30 p-3">
             {picked.map((item) => (
               <button
                 key={item.id}
@@ -177,8 +177,8 @@ function WordBank({
               </button>
             ))}
             {picked.length === 0 && (
-              <span className="self-center px-2 text-sm text-slate-500">
-                Tap words to build the sentence
+              <span className="self-center px-2 text-sm text-sg-light">
+                Toca las palabras para construir la frase
               </span>
             )}
           </div>
@@ -242,14 +242,14 @@ function Listen({ ex, onDone }: { ex: ListenExercise; onDone: (c: boolean) => vo
         <div>
           <button
             onClick={() => speak(ex.audio)}
-            className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-sky-500/15 py-6 text-sky-200 hover:bg-sky-500/25"
+            className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-sg-blue/15 py-6 text-sg-blue hover:bg-sg-blue/25"
           >
             <span className="text-3xl">🔊</span>
-            <span className="font-display font-900">Play again</span>
+            <span className="font-display font-900">Escuchar otra vez</span>
           </button>
           <ChoiceGrid choices={choices} sel={sel} setSel={setSel} answer={ex.answer} phase={phase} />
           {phase !== "answer" && (
-            <p className="mt-3 text-sm text-slate-400">“{ex.audio}” = {ex.translation}</p>
+            <p className="mt-3 text-sm text-sg-sub">“{ex.audio}” = {ex.translation}</p>
           )}
         </div>
       )}
@@ -328,7 +328,7 @@ function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void
 
   return (
     <div className="flex min-h-[60vh] flex-col">
-      <h2 className="mb-6 font-display text-2xl font-900">Match the pairs</h2>
+      <h2 className="mb-6 font-display text-2xl font-900 text-sg-ink">Empareja</h2>
       <div className="grid flex-1 grid-cols-2 gap-3">
         <div className="space-y-3">
           {esList.map((es) => (
@@ -366,8 +366,8 @@ function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void
           ))}
         </div>
       </div>
-      <p className="mt-4 text-center text-sm text-slate-400">
-        Tap a Spanish word, then its English match.
+      <p className="mt-4 text-center text-sm text-sg-sub">
+        Toca una palabra en español y luego su traducción.
       </p>
     </div>
   );

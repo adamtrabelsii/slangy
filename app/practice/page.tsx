@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Lock, Send, Volume2 } from "lucide-react";
+import { Lock, Send } from "lucide-react";
 import { SCENARIOS } from "@/lib/content/scenarios";
 import { levelAtLeast, type Scenario } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -29,18 +29,19 @@ export default function PracticePage() {
   const level = useStore((s) => s.level);
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
-  if (!hydrated) return <div className="py-20 text-center text-slate-400">Cargando…</div>;
+  if (!hydrated) return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
 
   if (!scenario) {
     return (
       <div className="space-y-5">
         <div>
-          <h1 className="font-display text-2xl font-900">AI Conversation Tutor</h1>
-          <p className="text-slate-400">
-            Practice real conversations. Your tutor replies in Spanish and corrects you as you go.
+          <p className="tagline text-sg-violet">Tutora IA · Habla</p>
+          <h1 className="font-display text-3xl font-900 text-sg-ink">Practica de verdad</h1>
+          <p className="mt-1 text-sm text-sg-sub">
+            Tu tutora responde en español y te corrige sobre la marcha.
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-3">
           {SCENARIOS.map((s) => {
             const unlocked = levelAtLeast(level, s.level);
             return (
@@ -48,24 +49,22 @@ export default function PracticePage() {
                 key={s.id}
                 disabled={!unlocked}
                 onClick={() => setScenario(s)}
-                className={`card flex items-center gap-4 p-4 text-left transition-transform ${
-                  unlocked ? "hover:scale-[1.02]" : "opacity-60"
+                className={`card flex w-full items-center gap-4 p-4 text-left transition-transform ${
+                  unlocked ? "active:scale-[0.99]" : "opacity-60"
                 }`}
               >
                 <span className="text-4xl">{s.emoji}</span>
                 <span className="flex-1">
-                  <span className="flex items-center gap-2 font-display font-900">
+                  <span className="flex items-center gap-2 font-display font-900 text-sg-ink">
                     {s.title}
                     {s.slang && (
-                      <span className="chip bg-brand-500/15 text-brand-200 text-[11px]">
-                        SLANG
-                      </span>
+                      <span className="chip sg-grad-soft text-[11px] text-sg-violet">SLANG</span>
                     )}
                   </span>
-                  <span className="block text-sm text-slate-400">{s.description}</span>
+                  <span className="block text-sm text-sg-sub">{s.description}</span>
                   {!unlocked && (
-                    <span className="mt-1 flex items-center gap-1 text-xs font-bold text-amber-400">
-                      <Lock size={12} /> Reach {s.level} to unlock
+                    <span className="mt-1 flex items-center gap-1 text-xs font-bold text-sg-coral-deep">
+                      <Lock size={12} /> Llega a {s.level} para desbloquear
                     </span>
                   )}
                 </span>
@@ -135,84 +134,118 @@ function Chat({
   }
 
   return (
-    <div className="flex h-[calc(100vh-180px)] flex-col">
-      <div className="mb-3 flex items-center justify-between">
-        <button onClick={onExit} className="text-sm font-bold text-slate-400 hover:text-white">
-          ← Scenarios
+    <div className="-mx-5 -mt-6 flex h-[calc(100vh-96px)] flex-col">
+      {/* Chat header */}
+      <div className="flex items-center gap-3 glass-40 px-5 py-3">
+        <button onClick={onExit} className="text-lg text-sg-light hover:text-sg-ink" aria-label="Back">
+          ←
         </button>
-        <div className="flex items-center gap-2 font-display font-900">
-          <span className="text-xl">{scenario.emoji}</span>
-          {scenario.title}
+        <div
+          className="relative flex h-10 w-10 items-center justify-center rounded-full text-lg text-white"
+          style={{
+            background: "linear-gradient(145deg,#7C3AED,#3B6FE8)",
+            boxShadow: "var(--sg-glow-violet)",
+          }}
+        >
+          🗨️
+          <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-sg-success" />
         </div>
-        {simulated ? (
-          <span className="chip bg-amber-500/15 text-amber-300 text-[11px]">PRACTICE MODE</span>
-        ) : (
-          <span className="w-24" />
+        <div className="flex-1">
+          <div className="text-[15px] font-extrabold text-sg-ink">Lola · tutora IA</div>
+          <div className="text-[11px] text-sg-sub">
+            {scenario.emoji} {scenario.title}
+          </div>
+        </div>
+        {simulated && (
+          <span className="chip bg-sg-violet/15 text-[11px] text-sg-violet">PRACTICE MODE</span>
         )}
       </div>
 
-      <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto rounded-3xl bg-ink-soft/40 p-4">
-        {messages.map((m, i) => (
-          <div key={i}>
-            <div className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                  m.role === "user"
-                    ? "bg-brand-600 text-white"
-                    : "bg-ink-line text-slate-100"
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  <span className="whitespace-pre-wrap font-medium">{m.content}</span>
-                  {m.role === "assistant" && ttsSupported() && (
-                    <button
-                      onClick={() => speak(m.content)}
-                      className="mt-0.5 shrink-0 text-sky-300 hover:text-sky-200"
-                      aria-label="Play"
-                    >
-                      <Volume2 size={16} />
-                    </button>
-                  )}
+      {/* Messages */}
+      <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
+        {messages.map((m, i) =>
+          m.role === "assistant" ? (
+            <div key={i} className="flex max-w-[82%] animate-pop flex-col gap-1.5 self-start">
+              {m.correction && (
+                <div
+                  className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5"
+                  style={{ background: "rgba(255,139,61,.14)", border: "1px solid rgba(255,139,61,.35)" }}
+                >
+                  <span className="text-xs">✏️</span>
+                  <span className="text-[11.5px] font-semibold" style={{ color: "#C25E18" }}>
+                    {m.correction.note}: <s className="opacity-70">{m.correction.original}</s> →{" "}
+                    <b>{m.correction.fixed}</b>
+                  </span>
                 </div>
+              )}
+              <div className="flex items-start gap-2">
+                <div
+                  className="glass-40 px-4 py-3 text-sm leading-5 text-sg-ink"
+                  style={{ borderRadius: "18px 18px 18px 5px" }}
+                >
+                  {m.content}
+                </div>
+                {ttsSupported() && (
+                  <button
+                    onClick={() => speak(m.content)}
+                    className="mt-1 shrink-0 text-sg-blue"
+                    aria-label="Play"
+                  >
+                    🔊
+                  </button>
+                )}
               </div>
             </div>
-            {m.correction && (
-              <div className="mt-1 flex justify-start">
-                <div className="max-w-[80%] rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
-                  <span className="font-900">✍️ Tip:</span> {m.correction.note}
-                  <div className="mt-1 text-amber-200/90">
-                    <span className="line-through opacity-70">{m.correction.original}</span> →{" "}
-                    <span className="font-bold">{m.correction.fixed}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+          ) : (
+            <div
+              key={i}
+              className="max-w-[82%] animate-pop self-end px-4 py-3 text-sm leading-5 text-white"
+              style={{
+                background: "linear-gradient(135deg,#3B6FE8,#5b6ff0)",
+                borderRadius: "18px 18px 5px 18px",
+                boxShadow: "var(--sg-glow-blue)",
+              }}
+            >
+              {m.content}
+            </div>
+          )
+        )}
         {loading && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl bg-ink-line px-4 py-2.5 text-slate-400">…</div>
+          <div
+            className="glass-40 self-start px-4 py-3 text-sg-light"
+            style={{ borderRadius: "18px 18px 18px 5px" }}
+          >
+            …
           </div>
         )}
       </div>
 
-      <div className="mt-3 flex items-end gap-2">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              send();
-            }
-          }}
-          rows={1}
-          placeholder="Escribe en español…"
-          className="flex-1 resize-none rounded-2xl border-2 border-ink-line bg-ink-soft p-3 font-medium text-white outline-none focus:border-brand-500"
-        />
-        <button onClick={send} disabled={loading || !input.trim()} className="btn-primary px-4 py-3">
-          <Send size={20} />
-        </button>
+      {/* Input */}
+      <div className="glass-25 px-4 py-3">
+        <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+              }
+            }}
+            rows={1}
+            placeholder="Escribe en español…"
+            className="flex-1 resize-none bg-transparent text-sm text-sg-ink outline-none"
+          />
+          <button
+            onClick={send}
+            disabled={loading || !input.trim()}
+            className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-white disabled:opacity-40"
+            style={{ background: "linear-gradient(135deg,#3B6FE8,#7C3AED)" }}
+            aria-label="Send"
+          >
+            <Send size={15} />
+          </button>
+        </div>
       </div>
     </div>
   );

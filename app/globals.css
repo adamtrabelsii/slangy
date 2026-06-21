@@ -3,8 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: "Nunito", system-ui, -apple-system, sans-serif;
+  --font-sans: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Nunito", system-ui, sans-serif;
+
+  /* Slangy brand */
+  --sg-coral: #ff6b5b;
+  --sg-coral-deep: #f1485b;
+  --sg-violet: #7c3aed;
+  --sg-grad: linear-gradient(135deg, #ff6b5b 0%, #ff4e86 45%, #9333ea 100%);
+  --sg-grad-soft: linear-gradient(135deg, rgba(255, 107, 91, 0.18), rgba(147, 51, 234, 0.18));
+  --sg-glow-coral: 0 8px 18px rgba(255, 78, 108, 0.4);
+  --sg-glow-violet: 0 8px 16px rgba(124, 58, 237, 0.35);
+  --sg-glow-blue: 0 8px 16px rgba(59, 111, 232, 0.35);
 }
 
 html,
@@ -13,69 +23,142 @@ body {
 }
 
 body {
-  @apply bg-ink text-slate-100 antialiased;
+  @apply text-sg-ink antialiased;
   font-family: var(--font-sans);
-  background-image:
-    radial-gradient(1100px 500px at 10% -10%, rgba(22, 179, 94, 0.12), transparent),
-    radial-gradient(900px 500px at 110% 10%, rgba(56, 189, 248, 0.1), transparent);
+  color: #111827;
+  background: radial-gradient(120% 80% at 20% 0%, #eee9fb, #e6e8f4 55%, #e1e3f0);
   background-attachment: fixed;
 }
 
-/* Chunky, tactile button used throughout. */
+/* ── Gradient helpers ─────────────────────────────── */
+.sg-grad {
+  background: var(--sg-grad);
+}
+.sg-grad-soft {
+  background: var(--sg-grad-soft);
+}
+.sg-grad-text {
+  background: var(--sg-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Glass surfaces ───────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.glass-25 {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.glass-40 {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+/* ── Buttons ──────────────────────────────────────── */
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 font-extrabold
-    uppercase tracking-wide transition-all duration-100 select-none;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  @apply inline-flex items-center justify-center gap-2 rounded-[18px] px-6 py-4 font-extrabold
+    transition-all duration-100 select-none;
 }
 .btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.25);
-}
-.btn-primary {
-  @apply btn bg-brand-500 text-white hover:bg-brand-400;
-}
-.btn-ghost {
-  @apply btn bg-ink-soft text-slate-200 hover:bg-ink-line;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.35);
-}
-.btn-danger {
-  @apply btn bg-rose-500 text-white hover:bg-rose-400;
+  transform: translateY(1px);
 }
 .btn:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
+.btn-primary {
+  @apply btn text-white;
+  background: var(--sg-grad);
+  box-shadow: var(--sg-glow-coral);
+}
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+.btn-violet {
+  @apply btn text-white bg-sg-violet;
+  box-shadow: var(--sg-glow-violet);
+}
+.btn-blue {
+  @apply btn text-white bg-sg-blue;
+  box-shadow: var(--sg-glow-blue);
+}
+.btn-ghost {
+  @apply btn bg-white/40 text-sg-sub border border-white/50;
+}
+.btn-ghost:hover {
+  @apply text-sg-ink;
+}
+.btn-danger {
+  @apply btn text-white;
+  background: #e8425e;
+  box-shadow: 0 8px 16px rgba(255, 84, 112, 0.35);
+}
 
+/* ── Cards / chips ────────────────────────────────── */
 .card {
-  @apply rounded-3xl border border-ink-line bg-ink-soft/70 backdrop-blur;
+  @apply rounded-3xl;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
-
 .chip {
-  @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold;
+  @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-extrabold;
 }
 
-/* Selectable tile (word bank, choices). */
+/* ── Typography helpers ───────────────────────────── */
+.tagline {
+  @apply text-[10px] font-bold uppercase;
+  letter-spacing: 2.5px;
+  color: var(--sg-coral-deep);
+}
+.section-label {
+  @apply text-[10px] font-bold uppercase text-sg-light;
+  letter-spacing: 2px;
+}
+.title-xl {
+  @apply font-display text-3xl font-900 leading-tight text-sg-ink;
+}
+
+/* ── Selectable tiles (word bank, choices) ────────── */
 .tile {
-  @apply rounded-2xl border-2 border-ink-line bg-ink-soft px-4 py-3 font-bold text-slate-100
+  @apply rounded-2xl border-[1.5px] bg-white px-4 py-3 font-bold text-sg-ink
     transition-colors duration-100 cursor-pointer select-none;
-  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.25);
+  border-color: rgba(59, 111, 232, 0.35);
+  box-shadow: 0 3px 0 rgba(59, 111, 232, 0.22);
 }
 .tile:hover {
-  @apply border-brand-500/60;
+  border-color: rgba(59, 111, 232, 0.6);
 }
 .tile-selected {
-  @apply border-brand-400 bg-brand-500/15;
+  border-color: var(--sg-violet);
+  background: rgba(124, 58, 237, 0.1);
 }
 .tile-correct {
-  @apply border-brand-400 bg-brand-500/20 text-brand-100;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.16);
+  color: #0c8f63;
 }
 .tile-wrong {
-  @apply border-rose-400 bg-rose-500/20 text-rose-100;
+  border-color: #e8425e;
+  background: rgba(255, 84, 112, 0.14);
+  color: #d83456;
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-ink-line;
+  @apply rounded-full;
+  background: rgba(124, 58, 237, 0.25);
 }

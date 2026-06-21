@@ -107,6 +107,14 @@ The full v1 vertical slice from the design spec is **implemented and type-checks
       verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
       conversation → view profile.
 
+### Design
+- [x] **Full visual redesign** from the Claude Design file `Slangy.dc.html` (neuro-tone system).
+      Swapped the dark/green theme for a **light glassmorphism look** with a coral→pink→violet
+      gradient brand, Spanish-first chrome, and a bottom tab bar (Aprende/Repasa/Habla/Perfil).
+      Re-skinned every screen: onboarding (level + goal), home as a "LA RUTA" timeline with a
+      HUD, lesson player + exercise tiles, SRS flashcards with stats, the AI chat ("Lola"),
+      and profile (stat grid, level progress, achievements). All logic preserved; `tsc` + build green.
+
 ### Core mechanics
 - [x] **Earned level progression** — levels are now earned from total XP
       (`intermediate` at 50 XP, `advanced` at 150 XP) instead of being manually self-selected.

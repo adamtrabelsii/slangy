@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Volume2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { dueCards } from "@/lib/srs";
 import { speak, ttsSupported } from "@/lib/tts";
@@ -19,18 +18,21 @@ export default function ReviewPage() {
   const [revealed, setRevealed] = useState(false);
   const [done, setDone] = useState(0);
 
-  if (!hydrated) return <div className="py-20 text-center text-slate-400">Cargando…</div>;
+  const total = Object.keys(cards).length;
+  const mastered = Object.values(cards).filter((c) => c.interval >= 6).length;
+
+  if (!hydrated) return <div className="py-20 text-center text-sg-sub">Cargando…</div>;
 
   if (session.length === 0) {
     return (
       <div className="py-16 text-center">
         <div className="text-6xl">🧠</div>
-        <h1 className="mt-4 font-display text-2xl font-900">Nothing due right now</h1>
-        <p className="mt-2 text-slate-400">
-          Finish a lesson to add words, then come back to lock them into memory.
+        <h1 className="mt-4 font-display text-2xl font-900 text-sg-ink">Nada que repasar ahora</h1>
+        <p className="mt-2 text-sg-sub">
+          Termina una lección para añadir palabras y vuelve a fijarlas en tu memoria.
         </p>
         <Link href="/" className="btn-primary mt-6 inline-flex">
-          Go learn
+          A aprender
         </Link>
       </div>
     );
@@ -40,10 +42,10 @@ export default function ReviewPage() {
     return (
       <div className="py-16 text-center">
         <div className="animate-float text-6xl">✅</div>
-        <h1 className="mt-4 font-display text-2xl font-900">Review done!</h1>
-        <p className="mt-2 text-slate-400">{done} cards reviewed. Memory reinforced.</p>
+        <h1 className="mt-4 font-display text-2xl font-900 text-sg-ink">¡Repaso terminado!</h1>
+        <p className="mt-2 text-sg-sub">{done} tarjetas repasadas. Memoria reforzada.</p>
         <Link href="/" className="btn-primary mt-6 inline-flex">
-          Back to learn
+          Volver a aprender
         </Link>
       </div>
     );
@@ -59,55 +61,106 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="py-4">
-      <div className="mb-6 flex items-center gap-4">
-        <span className="text-sm font-bold text-slate-400">
-          {idx + 1} / {session.length}
-        </span>
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-ink-line">
-          <div
-            className="h-full rounded-full bg-brand-500 transition-all"
-            style={{ width: `${(idx / session.length) * 100}%` }}
-          />
-        </div>
+    <div>
+      <p className="tagline text-sg-violet">Repaso inteligente · SRS</p>
+      <h1 className="font-display text-3xl font-900 text-sg-ink">Repasa hoy</h1>
+      <p className="mb-4 mt-1 text-sm text-sg-sub">
+        La repetición espaciada trae las palabras justo antes de que las olvides.
+      </p>
+
+      {/* Stats */}
+      <div className="mb-5 flex gap-2">
+        <StatBox value={session.length} label="DUE" bg="rgba(59,111,232,.14)" border="rgba(59,111,232,.35)" color="#3B6FE8" />
+        <StatBox value={total} label="APRENDIDAS" bg="rgba(16,185,129,.14)" border="rgba(16,185,129,.35)" color="#10B981" />
+        <StatBox value={mastered} label="DOMINADAS" bg="rgba(124,58,237,.14)" border="rgba(124,58,237,.35)" color="#7C3AED" />
       </div>
 
-      <div className="card mx-auto flex min-h-[300px] max-w-lg flex-col items-center justify-center gap-4 p-8 text-center">
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
-          What does this mean?
-        </span>
-        <div className="flex items-center gap-3">
-          <span className="font-display text-4xl font-900">{card.es}</span>
-          {ttsSupported() && (
-            <button
-              onClick={() => speak(card.es)}
-              className="grid h-10 w-10 place-items-center rounded-xl bg-sky-500/15 text-sky-300 hover:bg-sky-500/25"
-              aria-label="Play audio"
-            >
-              <Volume2 size={20} />
-            </button>
-          )}
-        </div>
+      <p className="section-label mb-2">
+        TARJETA {idx + 1} DE {session.length}
+      </p>
 
-        {revealed && (
-          <div className="animate-pop text-2xl font-bold text-brand-200">{card.en}</div>
-        )}
-      </div>
-
-      <div className="mx-auto mt-6 max-w-lg">
+      {/* Flashcard */}
+      <button
+        onClick={() => setRevealed((r) => !r)}
+        className="glass mb-4 flex min-h-[240px] w-full flex-col rounded-3xl p-7 text-left"
+      >
         {!revealed ? (
-          <button className="btn-primary w-full" onClick={() => setRevealed(true)}>
-            Show answer
-          </button>
+          <>
+            <span className="self-start rounded-full bg-sg-violet/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-violet">
+              ESPAÑOL
+            </span>
+            <div className="flex flex-1 flex-col items-center justify-center gap-2">
+              <span className="text-center font-display text-3xl font-900 text-sg-ink">
+                {card.es}
+              </span>
+              {ttsSupported() && (
+                <span
+                  className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-bold text-sg-blue"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    speak(card.es);
+                  }}
+                >
+                  🔊 escuchar
+                </span>
+              )}
+            </div>
+            <span className="text-center text-[11px] text-sg-light">
+              Toca para ver el significado
+            </span>
+          </>
         ) : (
-          <div className="grid grid-cols-4 gap-2">
-            <GradeBtn label="Again" sub="<10m" color="bg-rose-500" onClick={() => grade("again")} />
-            <GradeBtn label="Hard" sub="" color="bg-amber-500" onClick={() => grade("hard")} />
-            <GradeBtn label="Good" sub="" color="bg-brand-500" onClick={() => grade("good")} />
-            <GradeBtn label="Easy" sub="" color="bg-sky-500" onClick={() => grade("easy")} />
-          </div>
+          <>
+            <span className="self-start rounded-full bg-sg-blue/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-blue">
+              SIGNIFICADO
+            </span>
+            <div className="flex flex-1 flex-col items-center justify-center text-center">
+              <span className="font-display text-2xl font-900 text-sg-ink">{card.en}</span>
+            </div>
+            <span className="text-center text-[11px] text-sg-light">¿Lo recordaste?</span>
+          </>
         )}
+      </button>
+
+      {/* Grade buttons */}
+      {revealed ? (
+        <div className="flex animate-pop gap-2">
+          <GradeBtn label="Otra vez" sub="<1 min" border="rgba(255,84,112,.4)" bg="rgba(255,84,112,.12)" color="#E8425E" onClick={() => grade("again")} />
+          <GradeBtn label="Difícil" sub="10 min" border="rgba(255,139,61,.4)" bg="rgba(255,139,61,.12)" color="#E8722A" onClick={() => grade("hard")} />
+          <GradeBtn label="Bien" sub="1 día" border="rgba(59,111,232,.4)" bg="rgba(59,111,232,.12)" color="#3B6FE8" onClick={() => grade("good")} />
+          <GradeBtn label="Fácil" sub="4 días" border="rgba(16,185,129,.4)" bg="rgba(16,185,129,.12)" color="#10B981" onClick={() => grade("easy")} />
+        </div>
+      ) : (
+        <button className="btn-violet h-13 w-full py-3.5 text-[15px]" onClick={() => setRevealed(true)}>
+          Mostrar respuesta
+        </button>
+      )}
+    </div>
+  );
+}
+
+function StatBox({
+  value,
+  label,
+  bg,
+  border,
+  color,
+}: {
+  value: number;
+  label: string;
+  bg: string;
+  border: string;
+  color: string;
+}) {
+  return (
+    <div
+      className="flex-1 rounded-2xl py-3 text-center"
+      style={{ background: bg, border: `1px solid ${border}` }}
+    >
+      <div className="font-display text-xl font-900" style={{ color }}>
+        {value}
       </div>
+      <div className="text-[9.5px] font-bold tracking-wide text-sg-sub">{label}</div>
     </div>
   );
 }
@@ -115,22 +168,28 @@ export default function ReviewPage() {
 function GradeBtn({
   label,
   sub,
+  border,
+  bg,
   color,
   onClick,
 }: {
   label: string;
   sub: string;
+  border: string;
+  bg: string;
   color: string;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className={`${color} rounded-2xl py-3 font-900 text-white transition-transform active:translate-y-0.5`}
-      style={{ boxShadow: "0 4px 0 0 rgba(0,0,0,0.3)" }}
+      className="flex-1 rounded-2xl py-3"
+      style={{ background: bg, border: `1.5px solid ${border}` }}
     >
-      <div>{label}</div>
-      {sub && <div className="text-[11px] font-bold opacity-80">{sub}</div>}
+      <div className="text-[13px] font-extrabold" style={{ color }}>
+        {label}
+      </div>
+      <div className="text-[9px] text-sg-light">{sub}</div>
     </button>
   );
 }

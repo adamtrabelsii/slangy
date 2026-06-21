@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Volume2 } from "lucide-react";
 import { speak, ttsSupported } from "@/lib/tts";
 
 export type Phase = "answer" | "correct" | "wrong";
@@ -27,68 +26,99 @@ export function ExerciseShell({
 
   function check() {
     if (!canCheck) return;
-    const ok = evaluate();
-    setPhase(ok ? "correct" : "wrong");
+    setPhase(evaluate() ? "correct" : "wrong");
   }
 
   const checked = phase !== "answer";
 
   return (
-    <div className="flex min-h-[60vh] flex-col">
+    <div className="flex min-h-[68vh] flex-col">
       <div className="flex-1">
-        <div className="mb-6 flex items-start gap-3">
-          <h2 className="font-display text-2xl font-900 leading-tight">{prompt}</h2>
+        {/* Speaker prompt */}
+        <div className="mb-6 flex items-center gap-3.5">
           {audioText && ttsSupported() && (
             <button
               onClick={() => speak(audioText)}
-              className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-500/15 text-sky-300 hover:bg-sky-500/25"
+              className="flex h-[54px] w-[54px] flex-none items-center justify-center rounded-full text-2xl text-white"
+              style={{
+                background: "linear-gradient(145deg,#5b8bff,#3B6FE8)",
+                boxShadow: "var(--sg-glow-blue)",
+              }}
               aria-label="Play audio"
             >
-              <Volume2 size={20} />
+              🔊
             </button>
           )}
+          <div className="glass rounded-2xl px-4 py-3.5">
+            <span className="font-display text-lg font-extrabold leading-tight text-sg-ink">
+              {prompt}
+            </span>
+          </div>
         </div>
 
         <div className="animate-pop">{children(phase)}</div>
       </div>
 
       {/* Feedback + footer */}
-      <div
-        className={`mt-6 rounded-2xl p-4 transition-colors ${
-          phase === "correct"
-            ? "bg-brand-500/15"
-            : phase === "wrong"
-            ? "bg-rose-500/15"
-            : "bg-transparent"
-        }`}
-      >
-        {phase === "wrong" && (
-          <div className="mb-3 text-rose-200">
-            <span className="font-900">Not quite.</span>{" "}
-            {correctText && (
-              <span>
-                Answer: <span className="font-bold">{correctText}</span>
-              </span>
-            )}
-          </div>
-        )}
-        {phase === "correct" && (
-          <div className="mb-3 font-900 text-brand-200">¡Correcto! 🎉</div>
-        )}
+      {phase === "answer" && (
+        <div className="pt-6">
+          <button className="btn-primary h-14 w-full text-base" disabled={!canCheck} onClick={check}>
+            Comprobar
+          </button>
+        </div>
+      )}
 
-        {!checked ? (
-          <button className="btn-primary w-full" disabled={!canCheck} onClick={check}>
-            Check
-          </button>
-        ) : (
+      {phase === "correct" && (
+        <div
+          className="-mx-5 mt-6 px-5 pb-2 pt-4"
+          style={{ background: "rgba(16,185,129,.16)", borderTop: "1px solid rgba(16,185,129,.4)" }}
+        >
+          <div className="mb-3 flex items-center gap-2.5">
+            <span className="text-2xl">🎉</span>
+            <div>
+              <div className="text-[15px] font-extrabold" style={{ color: "#0c8f63" }}>
+                ¡Perfecto!
+              </div>
+              {correctText && (
+                <div className="text-xs" style={{ color: "#0c8f63" }}>
+                  {correctText}
+                </div>
+              )}
+            </div>
+          </div>
           <button
-            className={phase === "correct" ? "btn-primary w-full" : "btn-danger w-full"}
-            onClick={() => onDone(phase === "correct")}
+            className="h-13 w-full rounded-[18px] py-3.5 text-base font-extrabold text-white"
+            style={{ background: "#10B981", boxShadow: "0 8px 16px rgba(16,185,129,.35)" }}
+            onClick={() => onDone(true)}
           >
-            Continue
+            Continuar →
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      {phase === "wrong" && (
+        <div
+          className="-mx-5 mt-6 px-5 pb-2 pt-4"
+          style={{ background: "rgba(255,84,112,.14)", borderTop: "1px solid rgba(255,84,112,.4)" }}
+        >
+          <div className="mb-3 flex items-center gap-2.5">
+            <span className="text-2xl">🙈</span>
+            <div>
+              <div className="text-[15px] font-extrabold" style={{ color: "#d83456" }}>
+                Casi…
+              </div>
+              {correctText && (
+                <div className="text-xs" style={{ color: "#d83456" }}>
+                  Respuesta: {correctText}
+                </div>
+              )}
+            </div>
+          </div>
+          <button className="btn-danger h-13 w-full py-3.5 text-base" onClick={() => onDone(false)}>
+            Continuar →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
