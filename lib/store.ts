@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { Grade, Level, SrsCard } from "@/lib/types";
+import { levelForXp, maxLevel } from "@/lib/types";
 import { newCard, review as reviewCard } from "@/lib/srs";
 
 const MAX_HEARTS = 5;
@@ -131,12 +132,18 @@ export const useStore = create<SlangyState>()(
           const todayXp =
             (s.todayKey === today ? s.todayXp : 0) + result.xp;
 
+          // Earn level progression from total XP — only ever promotes upward, so a
+          // learner who onboarded at a higher level is never demoted.
+          const newXp = s.xp + result.xp;
+          const level = maxLevel(s.level, levelForXp(newXp));
+
           return {
-            xp: s.xp + result.xp,
+            xp: newXp,
             todayXp,
             todayKey: today,
             streak,
             lastStreakDay,
+            level,
             gems: s.gems + Math.round(result.xp / 5),
             completedSkills: {
               ...s.completedSkills,

@@ -3,7 +3,7 @@
 import { Flame, Gem, Star, Trophy } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
-import { LEVEL_ORDER, type Level } from "@/lib/types";
+import { XP_FOR_LEVEL, nextLevel, type Level } from "@/lib/types";
 
 const LEVEL_LABEL: Record<Level, string> = {
   beginner: "Beginner",
@@ -20,7 +20,6 @@ export default function ProfilePage() {
   const cards = useStore((s) => s.cards);
   const dailyGoalXp = useStore((s) => s.dailyGoalXp);
   const todayXp = useStore((s) => s.todayXp);
-  const setLevel = useStore((s) => s.setLevel);
   const reset = useStore((s) => s.reset);
 
   if (!hydrated) return <div className="py-20 text-center text-slate-400">Cargando…</div>;
@@ -28,6 +27,13 @@ export default function ProfilePage() {
   const wordsLearned = Object.keys(cards).length;
   const due = countDue(cards);
   const mastered = Object.values(cards).filter((c) => c.interval >= 6).length;
+
+  // Earned-level progress toward the next tier.
+  const next = nextLevel(level);
+  const floor = XP_FOR_LEVEL[level];
+  const target = next ? XP_FOR_LEVEL[next] : floor;
+  const levelPct = next ? Math.min(100, Math.round(((xp - floor) / (target - floor)) * 100)) : 100;
+  const xpToNext = next ? Math.max(0, target - xp) : 0;
 
   return (
     <div className="space-y-6">
@@ -78,25 +84,34 @@ export default function ProfilePage() {
       </div>
 
       <div className="card p-5">
-        <h2 className="font-display text-lg font-900">Level</h2>
-        <p className="text-sm text-slate-400">
-          Advanced unlocks the Real Talk slang & idiom skills and scenarios.
-        </p>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {LEVEL_ORDER.map((l) => (
-            <button
-              key={l}
-              onClick={() => setLevel(l)}
-              className={`rounded-2xl border-2 py-2 font-900 capitalize ${
-                level === l
-                  ? "border-brand-400 bg-brand-500/10 text-brand-100"
-                  : "border-ink-line bg-ink-soft text-slate-300 hover:border-brand-500/50"
-              }`}
-            >
-              {l}
-            </button>
-          ))}
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-900">Level</h2>
+          <span className="chip bg-brand-500/15 text-brand-200">{LEVEL_LABEL[level]}</span>
         </div>
+        {next ? (
+          <>
+            <p className="mt-1 text-sm text-slate-400">
+              Earn <span className="font-bold text-brand-200">{xpToNext} XP</span> more to reach{" "}
+              <span className="font-bold capitalize">{LEVEL_LABEL[next]}</span>
+              {next === "advanced" && " — unlocking Real Talk slang & idioms."}
+            </p>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="h-3 flex-1 overflow-hidden rounded-full bg-ink-line">
+                <div
+                  className="h-full rounded-full bg-brand-500 transition-all"
+                  style={{ width: `${levelPct}%` }}
+                />
+              </div>
+              <span className="text-xs font-bold text-slate-400">
+                {xp}/{target} XP
+              </span>
+            </div>
+          </>
+        ) : (
+          <p className="mt-1 text-sm text-slate-400">
+            🏆 You've reached the top level — all skills and Real Talk scenarios are unlocked.
+          </p>
+        )}
       </div>
 
       <button

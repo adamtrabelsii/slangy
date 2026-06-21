@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Heart, X } from "lucide-react";
 import { getSkill } from "@/lib/content/spanish";
-import { levelAtLeast, type Exercise } from "@/lib/types";
+import { levelAtLeast, levelForXp, LEVEL_ORDER, type Exercise, type Level } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { ExerciseView } from "@/components/exercises/Exercises";
 
@@ -16,6 +16,7 @@ export default function LessonPage() {
 
   const hydrated = useStore((s) => s.hydrated);
   const level = useStore((s) => s.level);
+  const xpNow = useStore((s) => s.xp);
   const hearts = useStore((s) => s.hearts);
   const gems = useStore((s) => s.gems);
   const completedCount = useStore((s) => s.completedSkills[params.skillId] ?? 0);
@@ -40,6 +41,7 @@ export default function LessonPage() {
   const [correct, setCorrect] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [leveledUpTo, setLeveledUpTo] = useState<Level | null>(null);
 
   useEffect(() => {
     if (lesson) setQueue(lesson.exercises);
@@ -66,7 +68,16 @@ export default function LessonPage() {
 
   if (finished) {
     const xp = 10 + correct + (mistakes === 0 ? 5 : 0);
-    return <Summary skillTitle={skill.title} correct={correct} total={total} mistakes={mistakes} xp={xp} />;
+    return (
+      <Summary
+        skillTitle={skill.title}
+        correct={correct}
+        total={total}
+        mistakes={mistakes}
+        xp={xp}
+        leveledUpTo={leveledUpTo}
+      />
+    );
   }
 
   // Out of hearts gate.
@@ -108,6 +119,11 @@ export default function LessonPage() {
       setSolved((s) => s + 1);
       if (remaining <= 1) {
         const xp = 10 + (correct + 1) + (mistakes === 0 ? 5 : 0);
+        // Detect an earned level-up so the summary can celebrate it.
+        const earned = levelForXp(xpNow + xp);
+        if (LEVEL_ORDER.indexOf(earned) > LEVEL_ORDER.indexOf(level)) {
+          setLeveledUpTo(earned);
+        }
         finishLesson(skill!.id, { correct: correct + 1, total, xp });
         setFinished(true);
       } else {
@@ -157,12 +173,14 @@ function Summary({
   total,
   mistakes,
   xp,
+  leveledUpTo,
 }: {
   skillTitle: string;
   correct: number;
   total: number;
   mistakes: number;
   xp: number;
+  leveledUpTo: Level | null;
 }) {
   const accuracy = total + mistakes === 0 ? 100 : Math.round((total / (total + mistakes)) * 100);
   return (
@@ -170,6 +188,20 @@ function Summary({
       <div className="animate-float text-7xl">🎉</div>
       <h1 className="mt-4 font-display text-3xl font-900">Lesson complete!</h1>
       <p className="text-slate-400">{skillTitle}</p>
+
+      {leveledUpTo && (
+        <div className="mx-auto mt-6 max-w-md animate-pop rounded-2xl border-2 border-brand-400/50 bg-brand-500/15 p-4">
+          <div className="text-3xl">⭐️ Level up!</div>
+          <p className="mt-1 font-900 capitalize text-brand-100">
+            You reached {leveledUpTo}
+          </p>
+          <p className="text-sm text-brand-200/90">
+            {leveledUpTo === "advanced"
+              ? "Real Talk slang & idioms are now unlocked. 🔥"
+              : "New skills and scenarios are now unlocked."}
+          </p>
+        </div>
+      )}
 
       <div className="mx-auto mt-8 grid max-w-md grid-cols-3 gap-3">
         <Stat label="XP earned" value={`+${xp}`} accent="text-amber-300" />

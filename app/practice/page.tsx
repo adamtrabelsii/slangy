@@ -19,6 +19,9 @@ const OPENERS: Record<string, string> = {
   market: "¡Buenas! Tengo fruta fresquísima. ¿Qué te llevas?",
   friends: "¡Eyy! ¿Qué onda, tío? ¿Todo guay? 😎",
   nightout: "¡Venga! ¿Qué plan tienes para esta noche? 🎉",
+  introductions: "¡Hola! Mucho gusto. ¿Cómo te llamas? 👋",
+  doctor: "Buenos días, pase y siéntese. ¿Qué le pasa hoy? 🩺",
+  interview: "Buenas tardes, gracias por venir. Cuénteme un poco sobre usted. 💼",
 };
 
 export default function PracticePage() {

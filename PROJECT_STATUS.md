@@ -107,6 +107,13 @@ The full v1 vertical slice from the design spec is **implemented and type-checks
       verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
       conversation → view profile.
 
+### Core mechanics
+- [x] **Earned level progression** — levels are now earned from total XP
+      (`intermediate` at 50 XP, `advanced` at 150 XP) instead of being manually self-selected.
+      `finishLesson` promotes the learner upward (never demotes someone who onboarded higher);
+      the lesson summary celebrates a level-up, and the Profile shows XP progress to the next
+      tier. This restores the "earn your way to Advanced slang" premise from the spec.
+
 ### Content & polish
 - [x] **Expand course content** — now **4 units, 13 skills, 21 lessons, 84 vocab items**.
       Added Family & People, Shopping, a whole "Everyday Life" unit (Daily Life, Feelings,

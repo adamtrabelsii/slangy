@@ -8,6 +8,31 @@ export function levelAtLeast(have: Level, need: Level): boolean {
   return LEVEL_ORDER.indexOf(have) >= LEVEL_ORDER.indexOf(need);
 }
 
+/** Total XP needed to *earn* each level. Tuned to be reachable with current content. */
+export const XP_FOR_LEVEL: Record<Level, number> = {
+  beginner: 0,
+  intermediate: 50,
+  advanced: 150,
+};
+
+/** The level a learner has earned purely from their total XP. */
+export function levelForXp(xp: number): Level {
+  if (xp >= XP_FOR_LEVEL.advanced) return "advanced";
+  if (xp >= XP_FOR_LEVEL.intermediate) return "intermediate";
+  return "beginner";
+}
+
+/** The next level up, or null if already at the top. */
+export function nextLevel(level: Level): Level | null {
+  const i = LEVEL_ORDER.indexOf(level);
+  return i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : null;
+}
+
+/** Return the higher of two levels. */
+export function maxLevel(a: Level, b: Level): Level {
+  return LEVEL_ORDER.indexOf(a) >= LEVEL_ORDER.indexOf(b) ? a : b;
+}
+
 // ---- Content model -------------------------------------------------------
 
 export type ExerciseKind =
