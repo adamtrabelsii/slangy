@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Brain, CheckCircle2, Volume2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { dueCards } from "@/lib/srs";
 import { speak, ttsSupported } from "@/lib/tts";
@@ -26,7 +27,7 @@ export default function ReviewPage() {
   if (session.length === 0) {
     return (
       <div className="py-16 text-center">
-        <div className="text-6xl">🧠</div>
+        <Brain size={64} className="mx-auto text-sg-primary" />
         <h1 className="mt-4 font-display text-2xl font-900 text-sg-ink">Nada que repasar ahora</h1>
         <p className="mt-2 text-sg-sub">
           Termina una lección para añadir palabras y vuelve a fijarlas en tu memoria.
@@ -41,7 +42,7 @@ export default function ReviewPage() {
   if (idx >= session.length) {
     return (
       <div className="py-16 text-center">
-        <div className="animate-float text-6xl">✅</div>
+        <CheckCircle2 size={64} className="mx-auto animate-float text-sg-success" />
         <h1 className="mt-4 font-display text-2xl font-900 text-sg-ink">¡Repaso terminado!</h1>
         <p className="mt-2 text-sg-sub">{done} tarjetas repasadas. Memoria reforzada.</p>
         <Link href="/" className="btn-primary mt-6 inline-flex">
@@ -62,7 +63,7 @@ export default function ReviewPage() {
 
   return (
     <div>
-      <p className="tagline text-sg-violet">Repaso inteligente · SRS</p>
+      <p className="tagline">Repaso inteligente · SRS</p>
       <h1 className="font-display text-3xl font-900 text-sg-ink">Repasa hoy</h1>
       <p className="mb-4 mt-1 text-sm text-sg-sub">
         La repetición espaciada trae las palabras justo antes de que las olvides.
@@ -70,9 +71,9 @@ export default function ReviewPage() {
 
       {/* Stats */}
       <div className="mb-5 flex gap-2">
-        <StatBox value={session.length} label="DUE" bg="rgba(59,111,232,.14)" border="rgba(59,111,232,.35)" color="#3B6FE8" />
-        <StatBox value={total} label="APRENDIDAS" bg="rgba(16,185,129,.14)" border="rgba(16,185,129,.35)" color="#10B981" />
-        <StatBox value={mastered} label="DOMINADAS" bg="rgba(124,58,237,.14)" border="rgba(124,58,237,.35)" color="#7C3AED" />
+        <StatBox value={session.length} label="PENDIENTES" bg="rgba(251,116,39,.12)" border="rgba(251,116,39,.3)" color="#EA580C" />
+        <StatBox value={total} label="APRENDIDAS" bg="rgba(14,158,110,.12)" border="rgba(14,158,110,.3)" color="#0E9E6E" />
+        <StatBox value={mastered} label="DOMINADAS" bg="rgba(245,158,11,.14)" border="rgba(245,158,11,.35)" color="#B45309" />
       </div>
 
       <p className="section-label mb-2">
@@ -86,7 +87,7 @@ export default function ReviewPage() {
       >
         {!revealed ? (
           <>
-            <span className="self-start rounded-full bg-sg-violet/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-violet">
+            <span className="self-start rounded-full bg-sg-amber/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-primary-deep">
               ESPAÑOL
             </span>
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
@@ -95,13 +96,13 @@ export default function ReviewPage() {
               </span>
               {ttsSupported() && (
                 <span
-                  className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-bold text-sg-blue"
+                  className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-bold text-sg-primary"
                   onClick={(e) => {
                     e.stopPropagation();
                     speak(card.es);
                   }}
                 >
-                  🔊 escuchar
+                  <Volume2 size={13} /> escuchar
                 </span>
               )}
             </div>
@@ -111,7 +112,7 @@ export default function ReviewPage() {
           </>
         ) : (
           <>
-            <span className="self-start rounded-full bg-sg-blue/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-blue">
+            <span className="self-start rounded-full bg-sg-success/15 px-2.5 py-1 text-[9.5px] font-extrabold tracking-wider text-sg-success">
               SIGNIFICADO
             </span>
             <div className="flex flex-1 flex-col items-center justify-center text-center">
@@ -125,13 +126,13 @@ export default function ReviewPage() {
       {/* Grade buttons */}
       {revealed ? (
         <div className="flex animate-pop gap-2">
-          <GradeBtn label="Otra vez" sub="<1 min" border="rgba(255,84,112,.4)" bg="rgba(255,84,112,.12)" color="#E8425E" onClick={() => grade("again")} />
-          <GradeBtn label="Difícil" sub="10 min" border="rgba(255,139,61,.4)" bg="rgba(255,139,61,.12)" color="#E8722A" onClick={() => grade("hard")} />
-          <GradeBtn label="Bien" sub="1 día" border="rgba(59,111,232,.4)" bg="rgba(59,111,232,.12)" color="#3B6FE8" onClick={() => grade("good")} />
-          <GradeBtn label="Fácil" sub="4 días" border="rgba(16,185,129,.4)" bg="rgba(16,185,129,.12)" color="#10B981" onClick={() => grade("easy")} />
+          <GradeBtn label="Otra vez" sub="<1 min" border="rgba(224,83,63,.4)" bg="rgba(224,83,63,.12)" color="#C23B29" onClick={() => grade("again")} />
+          <GradeBtn label="Difícil" sub="10 min" border="rgba(180,83,9,.4)" bg="rgba(180,83,9,.12)" color="#B45309" onClick={() => grade("hard")} />
+          <GradeBtn label="Bien" sub="1 día" border="rgba(251,116,39,.4)" bg="rgba(251,116,39,.12)" color="#EA580C" onClick={() => grade("good")} />
+          <GradeBtn label="Fácil" sub="4 días" border="rgba(14,158,110,.4)" bg="rgba(14,158,110,.12)" color="#0E9E6E" onClick={() => grade("easy")} />
         </div>
       ) : (
-        <button className="btn-violet h-13 w-full py-3.5 text-[15px]" onClick={() => setRevealed(true)}>
+        <button className="btn-primary h-13 w-full py-3.5 text-[15px]" onClick={() => setRevealed(true)}>
           Mostrar respuesta
         </button>
       )}

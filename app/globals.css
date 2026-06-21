@@ -6,15 +6,14 @@
   --font-sans: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Nunito", system-ui, sans-serif;
 
-  /* Slangy brand */
-  --sg-coral: #ff6b5b;
-  --sg-coral-deep: #f1485b;
-  --sg-violet: #7c3aed;
-  --sg-grad: linear-gradient(135deg, #ff6b5b 0%, #ff4e86 45%, #9333ea 100%);
-  --sg-grad-soft: linear-gradient(135deg, rgba(255, 107, 91, 0.18), rgba(147, 51, 234, 0.18));
-  --sg-glow-coral: 0 8px 18px rgba(255, 78, 108, 0.4);
-  --sg-glow-violet: 0 8px 16px rgba(124, 58, 237, 0.35);
-  --sg-glow-blue: 0 8px 16px rgba(59, 111, 232, 0.35);
+  /* Slangy — warm sunset brand */
+  --sg-primary: #fb7427;
+  --sg-primary-deep: #ea580c;
+  --sg-amber: #f59e0b;
+  --sg-grad: linear-gradient(135deg, #fb7427 0%, #fb923c 45%, #f59e0b 100%);
+  --sg-grad-soft: linear-gradient(135deg, rgba(251, 116, 39, 0.16), rgba(245, 158, 11, 0.16));
+  --sg-glow: 0 10px 22px rgba(234, 88, 12, 0.28);
+  --sg-glow-amber: 0 8px 16px rgba(245, 158, 11, 0.3);
 }
 
 html,
@@ -25,8 +24,8 @@ body {
 body {
   @apply text-sg-ink antialiased;
   font-family: var(--font-sans);
-  color: #111827;
-  background: radial-gradient(120% 80% at 20% 0%, #eee9fb, #e6e8f4 55%, #e1e3f0);
+  color: #2b1a12;
+  background: radial-gradient(125% 85% at 20% -5%, #fff7ed, #fff1e2 55%, #ffe9d6);
   background-attachment: fixed;
 }
 
@@ -44,22 +43,22 @@ body {
   color: transparent;
 }
 
-/* ── Glass surfaces ───────────────────────────────── */
+/* ── Glass surfaces (warm-tinted) ─────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
-.glass-25 {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-}
-.glass-40 {
+.glass-soft {
   background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.glass-strong {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
@@ -67,49 +66,43 @@ body {
 /* ── Buttons ──────────────────────────────────────── */
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-[18px] px-6 py-4 font-extrabold
-    transition-all duration-100 select-none;
+    transition-all duration-150 select-none;
 }
 .btn:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.995);
 }
 .btn:disabled {
-  @apply opacity-50 cursor-not-allowed;
+  @apply opacity-45 cursor-not-allowed;
 }
 .btn-primary {
   @apply btn text-white;
   background: var(--sg-grad);
-  box-shadow: var(--sg-glow-coral);
+  box-shadow: var(--sg-glow);
 }
 .btn-primary:hover {
-  filter: brightness(1.05);
-}
-.btn-violet {
-  @apply btn text-white bg-sg-violet;
-  box-shadow: var(--sg-glow-violet);
-}
-.btn-blue {
-  @apply btn text-white bg-sg-blue;
-  box-shadow: var(--sg-glow-blue);
+  filter: brightness(1.04);
 }
 .btn-ghost {
-  @apply btn bg-white/40 text-sg-sub border border-white/50;
+  @apply btn bg-white/60 text-sg-sub;
+  border: 1px solid var(--sg-line);
 }
 .btn-ghost:hover {
   @apply text-sg-ink;
 }
 .btn-danger {
   @apply btn text-white;
-  background: #e8425e;
-  box-shadow: 0 8px 16px rgba(255, 84, 112, 0.35);
+  background: #e0533f;
+  box-shadow: 0 10px 20px rgba(224, 83, 63, 0.3);
 }
 
 /* ── Cards / chips ────────────────────────────────── */
 .card {
   @apply rounded-3xl;
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
+  box-shadow: 0 12px 30px rgba(234, 88, 12, 0.06);
 }
 .chip {
   @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-extrabold;
@@ -119,39 +112,48 @@ body {
 .tagline {
   @apply text-[10px] font-bold uppercase;
   letter-spacing: 2.5px;
-  color: var(--sg-coral-deep);
+  color: var(--sg-primary-deep);
 }
 .section-label {
   @apply text-[10px] font-bold uppercase text-sg-light;
   letter-spacing: 2px;
 }
-.title-xl {
-  @apply font-display text-3xl font-900 leading-tight text-sg-ink;
+
+/* ── Inputs ───────────────────────────────────────── */
+.field {
+  @apply w-full rounded-2xl bg-white px-4 py-3.5 text-[15px] font-semibold text-sg-ink outline-none transition-colors;
+  border: 1.5px solid #f0e2d6;
+}
+.field::placeholder {
+  @apply font-medium text-sg-light;
+}
+.field:focus {
+  border-color: var(--sg-primary);
 }
 
 /* ── Selectable tiles (word bank, choices) ────────── */
 .tile {
   @apply rounded-2xl border-[1.5px] bg-white px-4 py-3 font-bold text-sg-ink
-    transition-colors duration-100 cursor-pointer select-none;
-  border-color: rgba(59, 111, 232, 0.35);
-  box-shadow: 0 3px 0 rgba(59, 111, 232, 0.22);
+    transition-all duration-100 cursor-pointer select-none;
+  border-color: #f0e2d6;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.06);
 }
 .tile:hover {
-  border-color: rgba(59, 111, 232, 0.6);
+  border-color: rgba(251, 116, 39, 0.5);
 }
 .tile-selected {
-  border-color: var(--sg-violet);
-  background: rgba(124, 58, 237, 0.1);
+  border-color: var(--sg-primary);
+  background: rgba(251, 116, 39, 0.1);
 }
 .tile-correct {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.16);
-  color: #0c8f63;
+  border-color: #0e9e6e;
+  background: rgba(14, 158, 110, 0.14);
+  color: #0b7c56;
 }
 .tile-wrong {
-  border-color: #e8425e;
-  background: rgba(255, 84, 112, 0.14);
-  color: #d83456;
+  border-color: #e0533f;
+  background: rgba(224, 83, 63, 0.12);
+  color: #c23b29;
 }
 
 ::-webkit-scrollbar {
@@ -160,5 +162,5 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   @apply rounded-full;
-  background: rgba(124, 58, 237, 0.25);
+  background: rgba(251, 116, 39, 0.25);
 }

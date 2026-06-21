@@ -9,22 +9,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Slangy brand (neuro-tone design system)
+        // Slangy — warm "sunset" palette (orange → amber)
         sg: {
-          coral: "#FF6B5B",
-          "coral-deep": "#F1485B",
-          pink: "#FF4E86",
-          violet: "#7C3AED",
-          "violet-deep": "#5b22c4",
-          gold: "#FFB81C",
-          mint: "#16C79A",
-          "mint-deep": "#0E9E79",
-          blue: "#3B6FE8",
-          ink: "#111827",
-          sub: "#6B7280",
-          light: "#9CA3AF",
-          success: "#10B981",
-          bg: "#F5F6FA",
+          primary: "#FB7427",
+          "primary-deep": "#EA580C",
+          amber: "#F59E0B",
+          gold: "#FBBF24",
+          ember: "#C2410C",
+          ink: "#2B1A12",
+          sub: "#8A7363",
+          light: "#B8A698",
+          line: "#F0E2D6",
+          success: "#0E9E6E",
+          danger: "#E0533F",
+          bg: "#FFF7ED",
+          // legacy aliases (kept warm so any stray class still reads on-brand)
+          coral: "#FB7427",
+          "coral-deep": "#EA580C",
+          pink: "#FB923C",
+          violet: "#C2410C",
+          "violet-deep": "#9A3412",
+          mint: "#0E9E6E",
+          "mint-deep": "#0B7C56",
+          blue: "#D97706",
         },
       },
       fontFamily: {
@@ -39,7 +46,7 @@ const config: Config = {
       },
       keyframes: {
         pop: {
-          "0%": { transform: "scale(0.85)", opacity: "0" },
+          "0%": { transform: "scale(0.9)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
         shake: {
@@ -52,20 +59,20 @@ const config: Config = {
           "50%": { transform: "translateY(-5px)" },
         },
         pulse2: {
-          "0%,100%": { boxShadow: "0 0 0 0 rgba(255,78,108,.5)" },
-          "50%": { boxShadow: "0 0 0 13px rgba(255,78,108,0)" },
+          "0%,100%": { boxShadow: "0 0 0 0 rgba(234,88,12,.45)" },
+          "50%": { boxShadow: "0 0 0 12px rgba(234,88,12,0)" },
         },
-        flame: {
-          "0%,100%": { transform: "rotate(-4deg) scale(1)" },
-          "50%": { transform: "rotate(4deg) scale(1.08)" },
+        rise: {
+          "0%": { transform: "translateY(8px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
         },
       },
       animation: {
         pop: "pop 0.2s ease-out",
         shake: "shake 0.4s ease-in-out",
         float: "float 3s ease-in-out infinite",
-        pulse2: "pulse2 2s ease-in-out infinite",
-        flame: "flame 1.6s ease-in-out infinite",
+        pulse2: "pulse2 2.2s ease-in-out infinite",
+        rise: "rise 0.3s ease-out",
       },
     },
   },

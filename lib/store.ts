@@ -4,7 +4,22 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { Grade, Level, SrsCard } from "@/lib/types";
 import { levelForXp, maxLevel } from "@/lib/types";
+import type { LangCode } from "@/lib/content/languages";
 import { newCard, review as reviewCard } from "@/lib/srs";
+
+export interface Account {
+  name: string;
+  email: string;
+}
+
+export interface OnboardingPayload {
+  account: Account;
+  avatar: string;
+  learnFrom: LangCode;
+  learnTarget: LangCode;
+  level: Level;
+  dailyGoalXp: number;
+}
 
 const MAX_HEARTS = 5;
 
@@ -27,6 +42,10 @@ export interface LessonResult {
 interface SlangyState {
   hydrated: boolean;
   onboarded: boolean;
+  account: Account | null;
+  avatar: string;
+  learnFrom: LangCode;
+  learnTarget: LangCode;
   level: Level;
   dailyGoalXp: number;
 
@@ -44,7 +63,8 @@ interface SlangyState {
 
   // actions
   setHydrated: () => void;
-  completeOnboarding: (level: Level, dailyGoalXp: number) => void;
+  completeOnboarding: (payload: OnboardingPayload) => void;
+  setTarget: (target: LangCode) => void;
   rollDay: () => void;
   loseHeart: () => void;
   refillHearts: (cost?: number) => boolean;
@@ -58,6 +78,10 @@ interface SlangyState {
 const initial = {
   hydrated: false,
   onboarded: false,
+  account: null as Account | null,
+  avatar: "sunset",
+  learnFrom: "en" as LangCode,
+  learnTarget: "es" as LangCode,
   level: "beginner" as Level,
   dailyGoalXp: 30,
   xp: 0,
@@ -78,8 +102,18 @@ export const useStore = create<SlangyState>()(
 
       setHydrated: () => set({ hydrated: true }),
 
-      completeOnboarding: (level, dailyGoalXp) =>
-        set({ onboarded: true, level, dailyGoalXp }),
+      completeOnboarding: (p) =>
+        set({
+          onboarded: true,
+          account: p.account,
+          avatar: p.avatar,
+          learnFrom: p.learnFrom,
+          learnTarget: p.learnTarget,
+          level: p.level,
+          dailyGoalXp: p.dailyGoalXp,
+        }),
+
+      setTarget: (learnTarget) => set({ learnTarget }),
 
       setLevel: (level) => set({ level }),
 
@@ -155,8 +189,8 @@ export const useStore = create<SlangyState>()(
       reset: () => set({ ...initial, hydrated: true }),
     }),
     {
-      name: "slangy-state-v1",
-      version: 1,
+      name: "slangy-state-v2",
+      version: 2,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => {
         const { hydrated, setHydrated, ...rest } = s as any;

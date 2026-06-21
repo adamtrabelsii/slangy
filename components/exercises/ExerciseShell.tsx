@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Volume2, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { speak, ttsSupported } from "@/lib/tts";
 
 export type Phase = "answer" | "correct" | "wrong";
@@ -29,8 +30,6 @@ export function ExerciseShell({
     setPhase(evaluate() ? "correct" : "wrong");
   }
 
-  const checked = phase !== "answer";
-
   return (
     <div className="flex min-h-[68vh] flex-col">
       <div className="flex-1">
@@ -39,14 +38,11 @@ export function ExerciseShell({
           {audioText && ttsSupported() && (
             <button
               onClick={() => speak(audioText)}
-              className="flex h-[54px] w-[54px] flex-none items-center justify-center rounded-full text-2xl text-white"
-              style={{
-                background: "linear-gradient(145deg,#5b8bff,#3B6FE8)",
-                boxShadow: "var(--sg-glow-blue)",
-              }}
+              className="sg-grad flex h-14 w-14 flex-none items-center justify-center rounded-full text-white"
+              style={{ boxShadow: "var(--sg-glow)" }}
               aria-label="Play audio"
             >
-              🔊
+              <Volume2 size={24} />
             </button>
           )}
           <div className="glass rounded-2xl px-4 py-3.5">
@@ -71,27 +67,27 @@ export function ExerciseShell({
       {phase === "correct" && (
         <div
           className="-mx-5 mt-6 px-5 pb-2 pt-4"
-          style={{ background: "rgba(16,185,129,.16)", borderTop: "1px solid rgba(16,185,129,.4)" }}
+          style={{ background: "rgba(14,158,110,.14)", borderTop: "1px solid rgba(14,158,110,.35)" }}
         >
           <div className="mb-3 flex items-center gap-2.5">
-            <span className="text-2xl">🎉</span>
+            <CheckCircle2 size={26} style={{ color: "#0B7C56" }} />
             <div>
-              <div className="text-[15px] font-extrabold" style={{ color: "#0c8f63" }}>
+              <div className="text-[15px] font-extrabold" style={{ color: "#0B7C56" }}>
                 ¡Perfecto!
               </div>
               {correctText && (
-                <div className="text-xs" style={{ color: "#0c8f63" }}>
+                <div className="text-xs" style={{ color: "#0B7C56" }}>
                   {correctText}
                 </div>
               )}
             </div>
           </div>
           <button
-            className="h-13 w-full rounded-[18px] py-3.5 text-base font-extrabold text-white"
-            style={{ background: "#10B981", boxShadow: "0 8px 16px rgba(16,185,129,.35)" }}
+            className="flex w-full items-center justify-center gap-1 rounded-[18px] py-3.5 text-base font-extrabold text-white"
+            style={{ background: "#0E9E6E", boxShadow: "0 8px 16px rgba(14,158,110,.3)" }}
             onClick={() => onDone(true)}
           >
-            Continuar →
+            Continuar <ArrowRight size={18} />
           </button>
         </div>
       )}
@@ -99,23 +95,23 @@ export function ExerciseShell({
       {phase === "wrong" && (
         <div
           className="-mx-5 mt-6 px-5 pb-2 pt-4"
-          style={{ background: "rgba(255,84,112,.14)", borderTop: "1px solid rgba(255,84,112,.4)" }}
+          style={{ background: "rgba(224,83,63,.12)", borderTop: "1px solid rgba(224,83,63,.35)" }}
         >
           <div className="mb-3 flex items-center gap-2.5">
-            <span className="text-2xl">🙈</span>
+            <XCircle size={26} style={{ color: "#C23B29" }} />
             <div>
-              <div className="text-[15px] font-extrabold" style={{ color: "#d83456" }}>
+              <div className="text-[15px] font-extrabold" style={{ color: "#C23B29" }}>
                 Casi…
               </div>
               {correctText && (
-                <div className="text-xs" style={{ color: "#d83456" }}>
+                <div className="text-xs" style={{ color: "#C23B29" }}>
                   Respuesta: {correctText}
                 </div>
               )}
             </div>
           </div>
-          <button className="btn-danger h-13 w-full py-3.5 text-base" onClick={() => onDone(false)}>
-            Continuar →
+          <button className="btn-danger flex h-13 w-full items-center justify-center gap-1 py-3.5 text-base" onClick={() => onDone(false)}>
+            Continuar <ArrowRight size={18} />
           </button>
         </div>
       )}

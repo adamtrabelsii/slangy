@@ -107,13 +107,18 @@ The full v1 vertical slice from the design spec is **implemented and type-checks
       verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
       conversation → view profile.
 
-### Design
-- [x] **Full visual redesign** from the Claude Design file `Slangy.dc.html` (neuro-tone system).
-      Swapped the dark/green theme for a **light glassmorphism look** with a coral→pink→violet
-      gradient brand, Spanish-first chrome, and a bottom tab bar (Aprende/Repasa/Habla/Perfil).
-      Re-skinned every screen: onboarding (level + goal), home as a "LA RUTA" timeline with a
-      HUD, lesson player + exercise tiles, SRS flashcards with stats, the AI chat ("Lola"),
-      and profile (stat grid, level progress, achievements). All logic preserved; `tsc` + build green.
+### Design & onboarding
+- [x] **Full visual redesign** from the Claude Design file `Slangy.dc.html` (neuro-tone system) —
+      light glassmorphism, bottom tab bar, Spanish chrome. Then **reworked to a warm "sunset"
+      palette** (orange→amber gradient, cream background, softer shadows) and **replaced all
+      emoji with lucide line icons** for a smoother look.
+- [x] **New multi-step onboarding** (5 steps): local mock **auth** (sign up / log in), pick the
+      language you **speak**, pick the language you want to **learn** (Spanish/English/French/
+      Arabic, both directions), level + daily goal, and **profile setup** (avatar + name).
+      Stored in the Zustand store (account, avatar, learnFrom/learnTarget); persist bumped to v2.
+- [x] **Language selector** — all 4 languages selectable; Spanish is the live course, others show
+      a "coming soon" state on home with a one-tap "start with Spanish" switch.
+- All store/SRS/level/exercise logic preserved; `tsc` clean, build green.
 
 ### Core mechanics
 - [x] **Earned level progression** — levels are now earned from total XP

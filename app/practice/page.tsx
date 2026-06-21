@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Lock, Send } from "lucide-react";
+import { Lock, Send, Volume2, Pencil, MessageCircle, ArrowLeft } from "lucide-react";
 import { SCENARIOS } from "@/lib/content/scenarios";
 import { levelAtLeast, type Scenario } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -14,14 +14,14 @@ interface Msg {
 }
 
 const OPENERS: Record<string, string> = {
-  cafe: "¡Hola! Bienvenido. ¿Qué te pongo hoy? ☕",
+  cafe: "¡Hola! Bienvenido. ¿Qué te pongo hoy?",
   directions: "¡Hola! Claro, ¿a dónde quieres ir?",
   market: "¡Buenas! Tengo fruta fresquísima. ¿Qué te llevas?",
-  friends: "¡Eyy! ¿Qué onda, tío? ¿Todo guay? 😎",
-  nightout: "¡Venga! ¿Qué plan tienes para esta noche? 🎉",
-  introductions: "¡Hola! Mucho gusto. ¿Cómo te llamas? 👋",
-  doctor: "Buenos días, pase y siéntese. ¿Qué le pasa hoy? 🩺",
-  interview: "Buenas tardes, gracias por venir. Cuénteme un poco sobre usted. 💼",
+  friends: "¡Eyy! ¿Qué onda, tío? ¿Todo guay?",
+  nightout: "¡Venga! ¿Qué plan tienes para esta noche?",
+  introductions: "¡Hola! Mucho gusto. ¿Cómo te llamas?",
+  doctor: "Buenos días, pase y siéntese. ¿Qué le pasa hoy?",
+  interview: "Buenas tardes, gracias por venir. Cuénteme un poco sobre usted.",
 };
 
 export default function PracticePage() {
@@ -35,7 +35,7 @@ export default function PracticePage() {
     return (
       <div className="space-y-5">
         <div>
-          <p className="tagline text-sg-violet">Tutora IA · Habla</p>
+          <p className="tagline">Tutora IA · Habla</p>
           <h1 className="font-display text-3xl font-900 text-sg-ink">Practica de verdad</h1>
           <p className="mt-1 text-sm text-sg-sub">
             Tu tutora responde en español y te corrige sobre la marcha.
@@ -53,17 +53,22 @@ export default function PracticePage() {
                   unlocked ? "active:scale-[0.99]" : "opacity-60"
                 }`}
               >
-                <span className="text-4xl">{s.emoji}</span>
+                <span
+                  className="grid h-12 w-12 flex-none place-items-center rounded-2xl font-display text-base font-900 text-white"
+                  style={{ background: unlocked ? "var(--sg-grad)" : "#D7BFA8" }}
+                >
+                  {s.title.slice(0, 1)}
+                </span>
                 <span className="flex-1">
                   <span className="flex items-center gap-2 font-display font-900 text-sg-ink">
                     {s.title}
                     {s.slang && (
-                      <span className="chip sg-grad-soft text-[11px] text-sg-violet">SLANG</span>
+                      <span className="chip sg-grad-soft text-[11px] text-sg-primary-deep">SLANG</span>
                     )}
                   </span>
                   <span className="block text-sm text-sg-sub">{s.description}</span>
                   {!unlocked && (
-                    <span className="mt-1 flex items-center gap-1 text-xs font-bold text-sg-coral-deep">
+                    <span className="mt-1 flex items-center gap-1 text-xs font-bold text-sg-primary-deep">
                       <Lock size={12} /> Llega a {s.level} para desbloquear
                     </span>
                   )}
@@ -136,28 +141,23 @@ function Chat({
   return (
     <div className="-mx-5 -mt-6 flex h-[calc(100vh-96px)] flex-col">
       {/* Chat header */}
-      <div className="flex items-center gap-3 glass-40 px-5 py-3">
-        <button onClick={onExit} className="text-lg text-sg-light hover:text-sg-ink" aria-label="Back">
-          ←
+      <div className="flex items-center gap-3 glass-strong px-5 py-3">
+        <button onClick={onExit} className="text-sg-light hover:text-sg-ink" aria-label="Back">
+          <ArrowLeft size={20} />
         </button>
         <div
-          className="relative flex h-10 w-10 items-center justify-center rounded-full text-lg text-white"
-          style={{
-            background: "linear-gradient(145deg,#7C3AED,#3B6FE8)",
-            boxShadow: "var(--sg-glow-violet)",
-          }}
+          className="sg-grad relative flex h-10 w-10 items-center justify-center rounded-full text-white"
+          style={{ boxShadow: "var(--sg-glow)" }}
         >
-          🗨️
+          <MessageCircle size={18} />
           <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-sg-success" />
         </div>
         <div className="flex-1">
           <div className="text-[15px] font-extrabold text-sg-ink">Lola · tutora IA</div>
-          <div className="text-[11px] text-sg-sub">
-            {scenario.emoji} {scenario.title}
-          </div>
+          <div className="text-[11px] text-sg-sub">{scenario.title}</div>
         </div>
         {simulated && (
-          <span className="chip bg-sg-violet/15 text-[11px] text-sg-violet">PRACTICE MODE</span>
+          <span className="chip bg-sg-amber/15 text-[11px] text-sg-primary-deep">PRACTICE MODE</span>
         )}
       </div>
 
@@ -169,10 +169,10 @@ function Chat({
               {m.correction && (
                 <div
                   className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5"
-                  style={{ background: "rgba(255,139,61,.14)", border: "1px solid rgba(255,139,61,.35)" }}
+                  style={{ background: "rgba(245,158,11,.14)", border: "1px solid rgba(245,158,11,.35)" }}
                 >
-                  <span className="text-xs">✏️</span>
-                  <span className="text-[11.5px] font-semibold" style={{ color: "#C25E18" }}>
+                  <Pencil size={12} style={{ color: "#B45309" }} />
+                  <span className="text-[11.5px] font-semibold" style={{ color: "#B45309" }}>
                     {m.correction.note}: <s className="opacity-70">{m.correction.original}</s> →{" "}
                     <b>{m.correction.fixed}</b>
                   </span>
@@ -180,7 +180,7 @@ function Chat({
               )}
               <div className="flex items-start gap-2">
                 <div
-                  className="glass-40 px-4 py-3 text-sm leading-5 text-sg-ink"
+                  className="glass-strong px-4 py-3 text-sm leading-5 text-sg-ink"
                   style={{ borderRadius: "18px 18px 18px 5px" }}
                 >
                   {m.content}
@@ -188,10 +188,10 @@ function Chat({
                 {ttsSupported() && (
                   <button
                     onClick={() => speak(m.content)}
-                    className="mt-1 shrink-0 text-sg-blue"
+                    className="mt-1 shrink-0 text-sg-primary"
                     aria-label="Play"
                   >
-                    🔊
+                    <Volume2 size={16} />
                   </button>
                 )}
               </div>
@@ -199,12 +199,8 @@ function Chat({
           ) : (
             <div
               key={i}
-              className="max-w-[82%] animate-pop self-end px-4 py-3 text-sm leading-5 text-white"
-              style={{
-                background: "linear-gradient(135deg,#3B6FE8,#5b6ff0)",
-                borderRadius: "18px 18px 5px 18px",
-                boxShadow: "var(--sg-glow-blue)",
-              }}
+              className="sg-grad max-w-[82%] animate-pop self-end px-4 py-3 text-sm leading-5 text-white"
+              style={{ borderRadius: "18px 18px 5px 18px", boxShadow: "var(--sg-glow)" }}
             >
               {m.content}
             </div>
@@ -212,7 +208,7 @@ function Chat({
         )}
         {loading && (
           <div
-            className="glass-40 self-start px-4 py-3 text-sg-light"
+            className="glass-strong self-start px-4 py-3 text-sg-light"
             style={{ borderRadius: "18px 18px 18px 5px" }}
           >
             …
@@ -221,7 +217,7 @@ function Chat({
       </div>
 
       {/* Input */}
-      <div className="glass-25 px-4 py-3">
+      <div className="glass-soft px-4 py-3">
         <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5">
           <textarea
             value={input}
@@ -239,8 +235,7 @@ function Chat({
           <button
             onClick={send}
             disabled={loading || !input.trim()}
-            className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-white disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg,#3B6FE8,#7C3AED)" }}
+            className="sg-grad flex h-8 w-8 flex-none items-center justify-center rounded-full text-white disabled:opacity-40"
             aria-label="Send"
           >
             <Send size={15} />

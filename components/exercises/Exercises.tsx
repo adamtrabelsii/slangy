@@ -10,6 +10,7 @@ import type {
   TranslateExercise,
   WordBankExercise,
 } from "@/lib/types";
+import { Volume2 } from "lucide-react";
 import { matchesAny, normalize, shuffle } from "@/lib/text";
 import { speak, ttsSupported } from "@/lib/tts";
 import { ExerciseShell, type Phase } from "./ExerciseShell";
@@ -242,9 +243,9 @@ function Listen({ ex, onDone }: { ex: ListenExercise; onDone: (c: boolean) => vo
         <div>
           <button
             onClick={() => speak(ex.audio)}
-            className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-sg-blue/15 py-6 text-sg-blue hover:bg-sg-blue/25"
+            className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-sg-amber/15 py-6 text-sg-primary-deep hover:bg-sg-amber/25"
           >
-            <span className="text-3xl">🔊</span>
+            <Volume2 size={28} />
             <span className="font-display font-900">Escuchar otra vez</span>
           </button>
           <ChoiceGrid choices={choices} sel={sel} setSel={setSel} answer={ex.answer} phase={phase} />

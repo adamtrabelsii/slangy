@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Heart, X } from "lucide-react";
+import { Heart, HeartCrack, X, PartyPopper, Sparkles, Flame } from "lucide-react";
 import { getSkill } from "@/lib/content/spanish";
 import { levelAtLeast, levelForXp, LEVEL_ORDER, type Exercise, type Level } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -84,7 +84,7 @@ export default function LessonPage() {
   if (hearts <= 0) {
     return (
       <div className="py-16 text-center">
-        <div className="text-6xl">💔</div>
+        <HeartCrack size={64} className="mx-auto text-sg-danger" />
         <h2 className="mt-4 font-display text-2xl font-900 text-sg-ink">Te quedaste sin vidas</h2>
         <p className="mt-2 text-sg-sub">
           Recarga para seguir, o vuelve más tarde — se reinician cada día.
@@ -157,8 +157,8 @@ export default function LessonPage() {
       </div>
 
       {skill.slang && (
-        <div className="chip sg-grad-soft mb-4 inline-flex text-sg-violet">
-          🔥 Real Talk · español informal
+        <div className="chip sg-grad-soft mb-4 inline-flex gap-1.5 text-sg-primary-deep">
+          <Flame size={14} /> Real Talk · español informal
         </div>
       )}
 
@@ -185,20 +185,22 @@ function Summary({
   const accuracy = total + mistakes === 0 ? 100 : Math.round((total / (total + mistakes)) * 100);
   return (
     <div className="py-10 text-center">
-      <div className="animate-float text-7xl">🎉</div>
+      <PartyPopper size={72} className="mx-auto animate-float text-sg-primary" />
       <h1 className="mt-4 font-display text-3xl font-900 text-sg-ink">¡Lección completada!</h1>
       <p className="text-sg-sub">{skillTitle}</p>
 
       {leveledUpTo && (
         <div
           className="sg-grad-soft mx-auto mt-6 max-w-md animate-pop rounded-2xl p-4"
-          style={{ border: "2px solid rgba(124,58,237,.45)" }}
+          style={{ border: "2px solid rgba(234,88,12,.4)" }}
         >
-          <div className="text-3xl">⭐️ ¡Subiste de nivel!</div>
-          <p className="mt-1 font-900 capitalize text-sg-violet">Llegaste a {leveledUpTo}</p>
+          <Sparkles size={28} className="mx-auto text-sg-primary-deep" />
+          <p className="mt-1 font-900 capitalize text-sg-primary-deep">
+            ¡Subiste de nivel! Llegaste a {leveledUpTo}
+          </p>
           <p className="text-sm text-sg-sub">
             {leveledUpTo === "advanced"
-              ? "Real Talk: slang & idioms desbloqueados. 🔥"
+              ? "Real Talk: slang & idioms desbloqueados."
               : "Nuevas habilidades y escenarios desbloqueados."}
           </p>
         </div>
@@ -215,7 +217,7 @@ function Summary({
           Continuar
         </Link>
         <Link href="/review" className="btn-ghost">
-          Repasar estas palabras 🧠
+          Repasar estas palabras
         </Link>
       </div>
     </div>
