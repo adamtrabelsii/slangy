@@ -19,7 +19,8 @@ import {
 import { HandWrittenTitle } from "@/components/ui/hand-writing-text";
 import { useStore } from "@/lib/store";
 import type { Level } from "@/lib/types";
-import { LANGUAGES, getLanguage, hasCourse, type LangCode } from "@/lib/content/languages";
+import { LANGUAGES, getLanguage, type LangCode } from "@/lib/content/languages";
+import { hasCourse } from "@/lib/content";
 import { AVATARS, avatarGrad, initials } from "@/lib/avatars";
 
 const LEVELS: { id: Level; title: string; desc: string; icon: LucideIcon }[] = [

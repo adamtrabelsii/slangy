@@ -1,5 +1,5 @@
 import type { Grade, SrsCard } from "@/lib/types";
-import { vocabFor } from "@/lib/content/vocab";
+import { getItem } from "@/lib/content";
 
 // A compact SM-2 variant. Tuned so "good" answers grow intervals smoothly and
 // "again" lapses send a card back to near-immediate review.
@@ -12,11 +12,12 @@ export function todayISO(): string {
 }
 
 export function newCard(itemId: string): SrsCard {
-  const v = vocabFor(itemId);
+  const it = getItem(itemId);
   return {
     itemId,
-    es: v.es,
-    en: v.en,
+    term: it?.term ?? itemId,
+    gloss: it?.gloss ?? { en: itemId },
+    roman: it?.roman,
     ease: 2.5,
     interval: 0,
     reps: 0,

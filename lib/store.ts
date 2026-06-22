@@ -201,8 +201,8 @@ export const useStore = create<SlangyState>()(
       reset: () => set({ ...initial, hydrated: true }),
     }),
     {
-      name: "slangy-state-v2",
-      version: 2,
+      name: "slangy-state-v3",
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => {
         const { hydrated, setHydrated, ...rest } = s as any;

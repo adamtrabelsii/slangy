@@ -1,5 +1,7 @@
 // Shared domain types for Slangy.
 
+import type { LangCode } from "@/lib/content/languages";
+
 export type Level = "beginner" | "intermediate" | "advanced";
 
 export const LEVEL_ORDER: Level[] = ["beginner", "intermediate", "advanced"];
@@ -100,17 +102,39 @@ export interface Lesson {
   exercises: Exercise[];
 }
 
+// ---- Vocab-driven course model -------------------------------------------
+// Courses are authored as vocab lists; lessons/exercises are GENERATED from
+// them (see lib/content/generate.ts) so every course works in any native
+// language automatically — the meaning ("gloss") is localized per learner.
+
+/** A word/phrase taught by a course. `gloss.en` is required as the pivot;
+ * other native-language meanings are optional and fall back to English. */
+export type Gloss = Partial<Record<LangCode, string>> & { en: string };
+
+export interface VocabItem {
+  /** Globally unique, namespaced by target language, e.g. "es:hola". */
+  id: string;
+  /** The target-language word/phrase — what is taught and spoken aloud. */
+  term: string;
+  /** Meaning shown to the learner, by their native language. */
+  gloss: Gloss;
+  /** Optional romanization for non-Latin scripts (shown as a pronunciation hint). */
+  roman?: string;
+  slang?: boolean;
+}
+
 export interface Skill {
+  /** Unique, namespaced by target, e.g. "es-basics". */
   id: string;
   title: string;
   /** Short subtitle / theme. */
   blurb: string;
   icon: string; // lucide icon name
-  color: string; // tailwind-ish accent for the node
+  color: string; // accent for the node
   minLevel: Level;
   /** True for "real talk" slang skills (advanced-gated, visually badged). */
   slang?: boolean;
-  lessons: Lesson[];
+  items: VocabItem[];
 }
 
 export interface Unit {
@@ -121,9 +145,7 @@ export interface Unit {
 }
 
 export interface Course {
-  id: string;
-  language: string;
-  from: string;
+  target: LangCode;
   units: Unit[];
 }
 
@@ -131,10 +153,12 @@ export interface Course {
 
 export interface SrsCard {
   itemId: string;
-  /** Spanish term. */
-  es: string;
-  /** English meaning. */
-  en: string;
+  /** The target-language term (front of the card). */
+  term: string;
+  /** Localized meanings by native language (back of the card). */
+  gloss: Gloss;
+  /** Optional romanization hint. */
+  roman?: string;
   /** SM-2 ease factor. */
   ease: number;
   /** Current interval in days. */

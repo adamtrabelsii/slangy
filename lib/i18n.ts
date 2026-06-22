@@ -85,6 +85,7 @@ const en: Dict = {
   ex_listenAgain: "Listen again",
   ex_match: "Match",
   ex_matchHint: "Tap a word, then its translation.",
+  ex_whatMeans: "What does “{term}” mean?",
 
   practice_tagline: "AI tutor · Speak",
   practice_title: "Real practice",
@@ -193,6 +194,7 @@ const fr: Dict = {
   ex_listenAgain: "Écouter à nouveau",
   ex_match: "Associe",
   ex_matchHint: "Touche un mot, puis sa traduction.",
+  ex_whatMeans: "Que signifie « {term} » ?",
 
   practice_tagline: "Tuteur IA · Parler",
   practice_title: "Pratique réelle",
@@ -301,6 +303,7 @@ const es: Dict = {
   ex_listenAgain: "Escuchar otra vez",
   ex_match: "Empareja",
   ex_matchHint: "Toca una palabra y luego su traducción.",
+  ex_whatMeans: "¿Qué significa “{term}”?",
 
   practice_tagline: "Tutora IA · Habla",
   practice_title: "Practica de verdad",
@@ -409,6 +412,7 @@ const ar: Dict = {
   ex_listenAgain: "استمع مجددًا",
   ex_match: "طابِق",
   ex_matchHint: "اضغط كلمة ثم ترجمتها.",
+  ex_whatMeans: "ما معنى “{term}”؟",
 
   practice_tagline: "مُعلّم ذكي · تحدّث",
   practice_title: "تدرّب فعليًا",
@@ -440,7 +444,8 @@ const ar: Dict = {
   profile_switchConfirm: "البدء من جديد بحساب آخر؟ سيُحذف تقدّمك على هذا الجهاز.",
 };
 
-const DICTS: Record<LangCode, Dict> = { en, fr, es, ar };
+// Only some native languages have full UI dictionaries; the rest fall back to English.
+const DICTS: Partial<Record<LangCode, Dict>> = { en, fr, es, ar };
 
 export function translate(lang: LangCode, key: string, params?: Record<string, string | number>): string {
   let s = DICTS[lang]?.[key] ?? en[key] ?? key;

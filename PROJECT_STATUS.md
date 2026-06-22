@@ -4,8 +4,10 @@ _Last updated: 2026-06-22_
 
 ## What this project is
 
-**Slangy** is a web-first language-learning app — "Duolingo but better" — currently shipping a
-full **Spanish** course for speakers of English / French / Spanish / Arabic. Three differentiators:
+**Slangy** is a web-first language-learning app — "Duolingo but better" — with a **vocab-driven,
+multi-language course engine**: 9 target-language courses (Spanish, French, Italian, German,
+Portuguese, Czech, Russian, Chinese, Japanese) whose lessons are **generated** from vocab lists
+and **localized to the learner's native language**. Three differentiators:
 
 1. **Real talk, not textbook talk.** Teaches slang, idioms, and colloquialisms — gated to the
    **Advanced** level so learners earn it.
@@ -61,11 +63,13 @@ lib/
 ├─ srs.ts                 SM-2 lite scheduling
 ├─ avatars.ts             warm gradient avatars + initials
 ├─ text.ts               answer normalization / shuffle
-└─ content/
-   ├─ spanish.ts          course: 4 units · 13 skills · ~21 lessons · 84 SRS-backed items
-   ├─ vocab.ts            84 canonical es↔en vocab entries (one per exercise itemId)
-   ├─ scenarios.ts        8 AI practice scenarios across all levels
-   └─ languages.ts        es/en/fr/ar + course-availability helper
+├─ content/
+│  ├─ index.ts            course registry (target → Course) + getCourse/getSkill/getItem/hasCourse
+│  ├─ generate.ts         generates localized lessons/exercises from a skill's vocab
+│  ├─ languages.ts        11 selectable languages (LangCode, names, monograms, RTL)
+│  ├─ scenarios.ts        8 AI practice scenarios (Spanish)
+│  └─ courses/            one file per target: spanish, french, italian, german,
+│                         portuguese, czech, russian, chinese, japanese
 ```
 
 ## Status: what's done ✅
@@ -86,8 +90,16 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 - **Profile** — stats, achievements, level progress, **language editing** (speak ↔ learn), and
   **account actions** (log out / switch account).
 
-### Content
-- **4 units, 13 skills, ~21 lessons, 84 SRS-backed vocab items, 85 exercises.**
+### Content & course engine
+- **Vocab-driven, multi-language engine.** Courses are authored as vocab lists (target term +
+  localized glosses + optional romanization); lessons/exercises are **generated** per learner
+  ([lib/content/generate.ts](lib/content/generate.ts)), so each course works in any native
+  language automatically. A registry ([lib/content/index.ts](lib/content/index.ts)) maps each
+  target `LangCode` to its `Course`.
+- **9 target courses:** Spanish (4 units, 13 skills, ~80 items incl. slang/idioms), French,
+  Italian, German, Portuguese (each ~2 units, ~45 items with en+es glosses), and foundational
+  Czech / Russian / Chinese / Japanese (greetings + numbers, with romanization).
+- **11 selectable languages** (es/en/fr/it/de/pt/ar/cs/ru/zh/ja) for both "speak" and "learn".
 - **8 AI scenarios** (café, directions, market, introductions, doctor, interview, friends, night out).
 
 ### Systems
@@ -113,9 +125,13 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 - **Auth is cosmetic/local.** It accepts any email/password and stores the profile in
   localStorage — no real accounts, sessions, or password checks. "Log out" keeps local progress;
   "switch account" wipes it. Real accounts would need a backend (e.g. Supabase).
-- **Only Spanish has a course.** The language picker offers English/French/Arabic too, but those
-  targets show a "coming soon" card with a one-tap switch to Spanish.
-- **TTS quality depends on the OS** having a Spanish voice installed.
+- **Course depth varies.** Spanish is deep; French/Italian/German/Portuguese are ~2 units each;
+  Czech/Russian/Chinese/Japanese are foundational (greetings + numbers). English-as-target has no
+  course yet → shows "coming soon." All are easy to grow: just add vocab to the course file.
+- **Gloss localization is partial.** Glosses exist in English everywhere, Spanish on the new
+  courses, and French/German on Spanish; other native languages fall back to English meanings.
+- **The AI tutor is Spanish-only** for now (scenarios + prompt), regardless of the chosen target.
+- **TTS quality depends on the OS** having a voice for the target language installed.
 - **AI correction tips are written in English** regardless of the learner's native language.
 - **No tests** and no CI yet.
 

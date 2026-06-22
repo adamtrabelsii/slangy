@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Heart, HeartCrack, X, PartyPopper, Sparkles, Flame } from "lucide-react";
-import { getSkill } from "@/lib/content/spanish";
+import { getSkill } from "@/lib/content";
+import { lessonsForSkill } from "@/lib/content/generate";
 import { levelAtLeast, levelForXp, LEVEL_ORDER, type Exercise, type Level } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { useT, type TFn } from "@/lib/i18n";
@@ -13,14 +14,17 @@ import { ExerciseView } from "@/components/exercises/Exercises";
 export default function LessonPage() {
   const router = useRouter();
   const params = useParams<{ skillId: string }>();
-  const skill = getSkill(params.skillId);
 
   const hydrated = useStore((s) => s.hydrated);
   const level = useStore((s) => s.level);
+  const learnTarget = useStore((s) => s.learnTarget);
+  const learnFrom = useStore((s) => s.learnFrom);
   const xpNow = useStore((s) => s.xp);
   const hearts = useStore((s) => s.hearts);
   const gems = useStore((s) => s.gems);
   const completedCount = useStore((s) => s.completedSkills[params.skillId] ?? 0);
+
+  const skill = getSkill(learnTarget, params.skillId);
 
   const t = useT();
   const loseHeart = useStore((s) => s.loseHeart);
@@ -29,13 +33,14 @@ export default function LessonPage() {
   const gradeItem = useStore((s) => s.gradeItem);
   const finishLesson = useStore((s) => s.finishLesson);
 
-  // Pick the lesson to play (next uncompleted, else replay last).
+  // Generate the localized lessons for this skill, then pick which to play.
   const lesson = useMemo(() => {
     if (!skill) return null;
-    const idx = Math.min(completedCount, skill.lessons.length - 1);
-    return skill.lessons[idx];
+    const lessons = lessonsForSkill(skill, learnFrom);
+    const idx = Math.min(completedCount, lessons.length - 1);
+    return lessons[idx];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [skill?.id]);
+  }, [skill?.id, learnFrom]);
 
   const total = lesson?.exercises.length ?? 0;
   const [queue, setQueue] = useState<Exercise[]>([]);

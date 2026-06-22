@@ -8,6 +8,7 @@ import { dueCards } from "@/lib/srs";
 import { speak, ttsSupported } from "@/lib/tts";
 import { useT } from "@/lib/i18n";
 import { getLanguage } from "@/lib/content/languages";
+import { glossOf } from "@/lib/content/generate";
 import type { Grade, SrsCard } from "@/lib/types";
 
 export default function ReviewPage() {
@@ -15,6 +16,7 @@ export default function ReviewPage() {
   const cards = useStore((s) => s.cards);
   const gradeItem = useStore((s) => s.gradeItem);
   const learnTarget = useStore((s) => s.learnTarget);
+  const learnFrom = useStore((s) => s.learnFrom);
   const t = useT();
   const targetName = getLanguage(learnTarget).native;
 
@@ -91,14 +93,15 @@ export default function ReviewPage() {
             </span>
             <div className="flex flex-1 flex-col items-center justify-center gap-2">
               <span className="text-center font-display text-3xl font-900 text-sg-ink">
-                {card.es}
+                {card.term}
               </span>
+              {card.roman && <span className="text-center text-sm text-sg-sub">{card.roman}</span>}
               {ttsSupported() && (
                 <span
                   className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-bold text-sg-primary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    speak(card.es);
+                    speak(card.term);
                   }}
                 >
                   <Volume2 size={13} /> {t("review_listen")}
@@ -113,7 +116,9 @@ export default function ReviewPage() {
               {t("review_meaning")}
             </span>
             <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <span className="font-display text-2xl font-900 text-sg-ink">{card.en}</span>
+              <span className="font-display text-2xl font-900 text-sg-ink">
+                {glossOf(card.gloss, learnFrom)}
+              </span>
             </div>
             <span className="text-center text-[11px] text-sg-light">{t("review_remember")}</span>
           </>

@@ -15,7 +15,14 @@ const LANG_PREFS: Record<LangCode, string[]> = {
   es: ["es-ES", "es-MX", "es-US", "es-419", "es"],
   en: ["en-US", "en-GB", "en"],
   fr: ["fr-FR", "fr-CA", "fr"],
+  it: ["it-IT", "it"],
+  de: ["de-DE", "de-AT", "de"],
+  pt: ["pt-BR", "pt-PT", "pt"],
   ar: ["ar-SA", "ar-EG", "ar"],
+  cs: ["cs-CZ", "cs"],
+  ru: ["ru-RU", "ru"],
+  zh: ["zh-CN", "zh-TW", "zh"],
+  ja: ["ja-JP", "ja"],
 };
 
 let currentLang: LangCode = "es";

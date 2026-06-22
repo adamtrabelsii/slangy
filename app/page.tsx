@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Flame, Gem, Heart, Check, Lock, Brain, ArrowRight, Sparkles } from "lucide-react";
-import { SPANISH_COURSE, ALL_SKILLS } from "@/lib/content/spanish";
+import { getCourse, courseSkills, hasCourse } from "@/lib/content";
 import { levelAtLeast, type Level, type Skill, type Unit } from "@/lib/types";
-import { getLanguage, hasCourse } from "@/lib/content/languages";
+import { getLanguage } from "@/lib/content/languages";
 import { useStore } from "@/lib/store";
 import { countDue } from "@/lib/srs";
 import { useT, type TFn } from "@/lib/i18n";
@@ -41,9 +41,10 @@ export default function HomePage() {
 
   const due = countDue(cards);
   const target = getLanguage(learnTarget);
+  const course = getCourse(learnTarget);
 
   // The single "you are here" skill: first unlocked, not-yet-completed skill.
-  const current = ALL_SKILLS.find(
+  const current = courseSkills(learnTarget).find(
     (s) => levelAtLeast(level, s.minLevel) && !(completed[s.id] > 0)
   );
 
@@ -100,7 +101,7 @@ export default function HomePage() {
                   opacity: 0.3,
                 }}
               />
-              {SPANISH_COURSE.units.map((unit, ui) => (
+              {course?.units.map((unit, ui) => (
                 <UnitBlock
                   key={unit.id}
                   unit={unit}
