@@ -1,25 +1,23 @@
 # Slangy — Project Status
 
-_Last updated: 2026-06-21_
+_Last updated: 2026-06-22_
 
 ## What this project is
 
-**Slangy** is a web-first language-learning app — "Duolingo but better" — that teaches
-**Spanish to English speakers** from beginner to advanced. It has three differentiators on
-top of the usual gamified-lesson formula:
+**Slangy** is a web-first language-learning app — "Duolingo but better" — currently shipping a
+full **Spanish** course for speakers of English / French / Spanish / Arabic. Three differentiators:
 
-1. **Real talk, not textbook talk.** Teaches slang, idioms, and colloquialisms — how people
-   *actually* speak. This content is **gated to the Advanced level** so learners earn it.
-2. **A real AI conversation tutor.** A chat tutor powered by **Google Gemini 2.5 Flash** that
-   roleplays scenarios, corrects mistakes inline, and adapts to the learner. Falls back to a
-   built-in simulated tutor when no API key is set, so the app always runs.
-3. **A smarter learning engine.** An SM-2-lite spaced-repetition system (SRS) schedules vocab
-   review instead of pure linear lessons.
+1. **Real talk, not textbook talk.** Teaches slang, idioms, and colloquialisms — gated to the
+   **Advanced** level so learners earn it.
+2. **A real AI conversation tutor** ("Lola") powered by **Google Gemini 2.5 Flash** that roleplays
+   scenarios, corrects mistakes inline, and adapts to the learner — with a built-in simulated
+   fallback so the app always works.
+3. **A smarter learning engine** — an SM-2-lite spaced-repetition system (SRS) schedules review.
 
-Plus table-stakes gamification: XP, streaks, hearts/lives, daily goal, gems, and a course path.
+Plus gamification (XP, streaks, hearts, gems, daily goal) and **earned level progression**.
 
-**Platform:** Web first (Next.js App Router). v1 uses **local persistence only** — all learner
-state lives in a Zustand store persisted to `localStorage`; no auth or backend DB.
+**Platform:** Web (Next.js App Router). **Local-only persistence** — all state lives in a Zustand
+store in `localStorage`; auth is a local mock (no backend yet).
 
 Full design rationale: [docs/superpowers/specs/2026-06-19-slangy-design.md](docs/superpowers/specs/2026-06-19-slangy-design.md)
 
@@ -28,154 +26,126 @@ Full design rationale: [docs/superpowers/specs/2026-06-19-slangy-design.md](docs
 | Area | Choice |
 |------|--------|
 | Framework | Next.js 14.2.18 (App Router), React 18, TypeScript 5.6 |
-| Styling | Tailwind CSS 3.4, custom theme tokens, framer-motion, lucide-react icons |
-| State | Zustand 5 (persisted to localStorage) |
-| AI | `@google/generative-ai` → Gemini 2.5 Flash (server-side proxy) |
-| Audio | Browser `speechSynthesis` (TTS) for listen exercises |
+| Styling | Tailwind CSS 3.4, custom warm "sunset" theme, glassmorphism |
+| Animation | framer-motion 11 (onboarding, hand-drawn title, transitions) |
+| State | Zustand 5 (persisted to localStorage, key `slangy-state-v2`) |
+| AI | `@google/generative-ai` → Gemini 2.5 Flash (structured JSON output) |
+| Audio | Browser `speechSynthesis`, target-language voice selection |
+| Fonts | Baloo 2 (display) + Nunito (body), via Google Fonts |
+| Icons | lucide-react (no emoji used as UI icons) |
 
 ## Architecture
 
 ```
 app/
-├─ layout.tsx              root shell + top bar
-├─ page.tsx                course path (home) — units → skills, with locks
-├─ onboarding/             level + daily-goal selection
-├─ lesson/[skillId]/       lesson player (the core loop)
-├─ review/                 SRS review session
-├─ practice/               AI conversation tutor
-├─ profile/                stats dashboard
+├─ layout.tsx              shell, fonts, LangSync, bottom TabBar
+├─ page.tsx                home — "LA RUTA" course path + HUD (+ coming-soon for non-ES targets)
+├─ onboarding/             welcome → auth → speak → learn → level/goal → profile setup
+├─ lesson/[skillId]/       lesson player + summary (level-up celebration)
+├─ review/                 SRS flashcard session
+├─ practice/               AI tutor chat ("Lola")
+├─ profile/                stats, achievements, language editing, account actions
 └─ api/chat/route.ts       server proxy → Gemini (+ simulated fallback)
-lib/
-├─ types.ts                shared domain types
-├─ content/spanish.ts      course data (units → skills → lessons → exercises)
-├─ content/scenarios.ts    AI practice scenarios
-├─ content/vocab.ts        vocabulary items
-├─ srs.ts                  SM-2 lite scheduling
-├─ store.ts                Zustand store (persisted)
-├─ tts.ts                  browser speech-synthesis helper
-├─ text.ts                 answer-normalization / shuffle helpers
-└─ gemini.ts               server-side Gemini client + system prompts
 components/
-├─ TopBar.tsx, Icon.tsx
-└─ exercises/              ExerciseShell + 5 exercise renderers
+├─ TabBar.tsx              bottom nav (localized, hides on onboarding/lesson)
+├─ LangSync.tsx            syncs document lang/dir + TTS voice to the learner
+├─ Icon.tsx                lucide icon map for skill nodes
+├─ ui/hand-writing-text.tsx  animated SVG path-draw title (shadcn-convention folder)
+└─ exercises/             ExerciseShell + 5 exercise renderers
+lib/
+├─ types.ts               domain types, level thresholds + helpers
+├─ i18n.ts                en/fr/es/ar UI dictionaries + useT() hook
+├─ store.ts               Zustand store (account, languages, progress, SRS)
+├─ gemini.ts              Gemini client, per-scenario system prompt, fallback
+├─ tts.ts                 speech synthesis with target-language voice
+├─ srs.ts                 SM-2 lite scheduling
+├─ avatars.ts             warm gradient avatars + initials
+├─ text.ts               answer normalization / shuffle
+└─ content/
+   ├─ spanish.ts          course: 4 units · 13 skills · ~21 lessons · 84 SRS-backed items
+   ├─ vocab.ts            84 canonical es↔en vocab entries (one per exercise itemId)
+   ├─ scenarios.ts        8 AI practice scenarios across all levels
+   └─ languages.ts        es/en/fr/ar + course-availability helper
 ```
 
-## What we've done so far ✅
+## Status: what's done ✅
 
-The full v1 vertical slice from the design spec is **implemented and type-checks clean**
-(`npx tsc --noEmit` → exit 0).
+Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 routes).
 
-- **Onboarding** — pick starting level (Beginner / Intermediate / Advanced) + daily goal.
-- **Course path (home)** — units → skills map with locking; slang skills visibly locked until Advanced.
-- **Lesson player** with all **5 exercise types** working:
-  - Multiple choice
-  - Translate-by-typing (with answer normalization + multiple accepted answers)
-  - Word-bank sentence assembly
-  - Listen-and-choose (browser TTS, with graceful text fallback when TTS is absent)
-  - Match pairs
-- **Gamification** — XP, daily XP goal, streak tracking, hearts (deplete on mistakes, refill
-  daily / buyable with gems), gems earned from XP.
-- **SRS engine** (`lib/srs.ts`) — SM-2-lite cards created on first sight, graded on answers,
-  scheduled for review.
-- **Review session** — built from items due per the SRS engine.
-- **AI practice** — scenario picker + chat with Gemini tutor via `/api/chat`; deterministic
-  **simulated fallback** when `GEMINI_API_KEY` is unset (flagged so UI can show "practice mode").
-- **Profile** — streak, total XP, level, words learned, SRS stats.
-- **Persistence** — versioned Zustand store in localStorage, with graceful reset on shape mismatch.
-- **Design spec** written and approved.
-- Dev server boots successfully (`dev-boot.log` shows all routes compiling and serving 200s).
+### Core learning loop
+- **Onboarding** — animated welcome (hand-drawn title), local mock **auth** (sign up / log in),
+  pick the language you **speak** and the one you want to **learn**, level + daily goal, and a
+  **profile setup** (gradient avatar + name). Multi-step with motion transitions.
+- **Course path (home)** — "LA RUTA" timeline with a HUD (streak/gems/hearts/daily goal), unit
+  headers, current/done/locked skill nodes, and Advanced-gated slang cards.
+- **Lesson player** — 5 exercise types (multiple choice, translate, word-bank, listen/TTS, match),
+  hearts that deplete on mistakes, out-of-hearts gate, and a summary that celebrates level-ups.
+- **SRS review** — flashcards built from due items, DUE/LEARNED/MASTERED stats, 4-grade scheduling.
+- **AI practice** — "Lola" chat per scenario; real Gemini replies with inline corrections, plus a
+  simulated fallback when no key/quota.
+- **Profile** — stats, achievements, level progress, **language editing** (speak ↔ learn), and
+  **account actions** (log out / switch account).
 
-## Current state notes
+### Content
+- **4 units, 13 skills, ~21 lessons, 84 SRS-backed vocab items, 85 exercises.**
+- **8 AI scenarios** (café, directions, market, introductions, doctor, interview, friends, night out).
 
-- **Not yet committed to git.** The branch `master` has **zero commits**; everything is
-  untracked. First commit is the immediate next step.
-- **No `.env` file** — only `.env.example`. The app runs in simulated tutor mode until a
-  real `GEMINI_API_KEY` is added.
-- **Content is a thin demo slice** — 3 units, ~7 skills, mostly 1 lesson each. Enough to
-  demonstrate every feature, not enough for real learning depth.
-- A `graphify-out/` knowledge-graph artifact exists for the codebase.
+### Systems
+- **Earned level progression** — levels earned from total XP (Intermediate @ 50, Advanced @ 150);
+  upward-only, celebrated in the lesson summary.
+- **Localization** — full UI in **English / French / Spanish / Arabic** (~67 keys each), keyed to
+  the learner's native language; document `lang`/`dir` follow it (**RTL for Arabic**). Lesson
+  content stays in the target language.
+- **Working AI tutor** — conversation starts on a user turn, Gemini **structured JSON output**,
+  2048-token budget (avoids 2.5-flash thinking truncation), rich per-scenario system prompt,
+  mandatory corrections for English input and real grammar mistakes.
+- **Correct TTS** — picks a native voice for the **target** language (es-ES/es-MX preferred) and
+  waits for async voice loading instead of using an English voice on Spanish words.
+- **Design** — warm sunset palette (orange→amber gradient, cream bg), glassmorphism, bottom tab
+  bar, lucide icons throughout. Guided by the ui-ux-pro-max skill.
 
-## What we need to do next 📋
+### Infra
+- Git history on GitHub: `https://github.com/adamtrabelsii/slangy` (branch `main`).
+- `.env` holds `GEMINI_API_KEY` and is gitignored (the key never leaves the device).
 
-### Immediate
-- [x] **Initialize git history** — first commit `6a5d686` (32 files; `node_modules`, `.env`,
-      `dev-boot.log`, `graphify-out/` ignored).
-- [x] **Run `npm run build`** — clean production build, all 8 routes generated, exit 0.
-- [ ] **Add a real `GEMINI_API_KEY`** locally and smoke-test the live AI tutor path
-      (the simulated fallback is the only path exercised so far). _Needs your API key._
-- [ ] **Manual end-to-end pass** — onboard → complete a lesson (all 5 exercise types) →
-      verify XP/streak/hearts persist across reload → run an SRS review → hold an AI
-      conversation → view profile.
+## Known limitations / honest notes
 
-### Localization, audio & motion
-- [x] **UI localized to the learner's native language** — new i18n layer ([lib/i18n.ts](lib/i18n.ts))
-      with en/fr/es/ar dictionaries, keyed by the learner's `from` language. All chrome (tab bar,
-      home, lesson, review, practice, profile, exercises) renders in English for English speakers,
-      French for French speakers, etc. Lesson *content* stays in the target language. Document
-      `lang`/`dir` follow the learner (RTL for Arabic) via [LangSync](components/LangSync.tsx).
-- [x] **Correct TTS voice** — [lib/tts.ts](lib/tts.ts) now picks a native voice for the *target*
-      language (es-ES/es-MX preferred) and waits for async voice loading instead of reading Spanish
-      words with the default English voice. Voice language follows `learnTarget`.
-- [x] **Typography & motion** — added **Baloo 2** rounded display font (Nunito body), framer-motion
-      onboarding welcome + step transitions, and a hand-drawn SVG title component at
-      [components/ui/hand-writing-text.tsx](components/ui/hand-writing-text.tsx) (path-draw animation,
-      respects `prefers-reduced-motion`). Guided by the ui-ux-pro-max skill (claymorphism direction).
+- **Auth is cosmetic/local.** It accepts any email/password and stores the profile in
+  localStorage — no real accounts, sessions, or password checks. "Log out" keeps local progress;
+  "switch account" wipes it. Real accounts would need a backend (e.g. Supabase).
+- **Only Spanish has a course.** The language picker offers English/French/Arabic too, but those
+  targets show a "coming soon" card with a one-tap switch to Spanish.
+- **TTS quality depends on the OS** having a Spanish voice installed.
+- **AI correction tips are written in English** regardless of the learner's native language.
+- **No tests** and no CI yet.
 
-### Design & onboarding
-- [x] **Full visual redesign** from the Claude Design file `Slangy.dc.html` (neuro-tone system) —
-      light glassmorphism, bottom tab bar, Spanish chrome. Then **reworked to a warm "sunset"
-      palette** (orange→amber gradient, cream background, softer shadows) and **replaced all
-      emoji with lucide line icons** for a smoother look.
-- [x] **New multi-step onboarding** (5 steps): local mock **auth** (sign up / log in), pick the
-      language you **speak**, pick the language you want to **learn** (Spanish/English/French/
-      Arabic, both directions), level + daily goal, and **profile setup** (avatar + name).
-      Stored in the Zustand store (account, avatar, learnFrom/learnTarget); persist bumped to v2.
-- [x] **Language selector** — all 4 languages selectable; Spanish is the live course, others show
-      a "coming soon" state on home with a one-tap "start with Spanish" switch.
-- All store/SRS/level/exercise logic preserved; `tsc` clean, build green.
+## What's next 📋
 
-### Core mechanics
-- [x] **Earned level progression** — levels are now earned from total XP
-      (`intermediate` at 50 XP, `advanced` at 150 XP) instead of being manually self-selected.
-      `finishLesson` promotes the learner upward (never demotes someone who onboarded higher);
-      the lesson summary celebrates a level-up, and the Profile shows XP progress to the next
-      tier. This restores the "earn your way to Advanced slang" premise from the spec.
-
-### Content & polish
-- [x] **Expand course content** — now **4 units, 13 skills, 21 lessons, 84 vocab items**.
-      Added Family & People, Shopping, a whole "Everyday Life" unit (Daily Life, Feelings,
-      Making Plans), extra lessons on existing skills, and a new "Texting & Online" slang skill.
-      Every exercise `itemId` is backed by a VOCAB entry (verified). _(tsc + build green)_
-- [x] **Add more AI practice scenarios** — added Meeting Someone New, At the Doctor, and a
-      formal Job Interview (now 8 scenarios across all levels).
-- [ ] **Further content depth** — more lessons per skill, audio variety, harder advanced material.
-- [ ] **Accessibility & mobile polish** — keyboard nav, focus states, responsive layout checks.
-- [ ] **Empty/edge states** — out of hearts, no items due for review, network/API errors in chat.
-
-### Future iterations (explicitly out of scope for v1)
-- [ ] Real accounts / auth and server-side DB sync (replace localStorage-only persistence).
-- [ ] Payments / subscription.
-- [ ] Leaderboards & friends (social).
-- [ ] Multiple target languages.
-- [ ] Audio recording + speech-recognition scoring.
-- [ ] Content-authoring tools.
-- [ ] Native mobile client (architecture already keeps this open).
+- [ ] Localize AI correction "notes" into the learner's native language (plumb `learnFrom` into `/api/chat`).
+- [ ] Pre-fill name/email on the onboarding auth step after a soft log-out (one-tap re-login).
+- [ ] Build real courses for French / English / Arabic targets (or stub lessons).
+- [ ] Deeper content per skill; more AI scenarios.
+- [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).
+- [ ] Automated tests + CI; consider deploying (Vercel).
+- [ ] Future: real auth + DB sync, payments, leaderboards/social, speech-recognition scoring, native mobile.
 
 ## How to run
 
 ```bash
 npm install
-cp .env.example .env   # optional: add GEMINI_API_KEY for the live AI tutor
-npm run dev            # http://localhost:3210 (per dev-boot.log)
+# .env already holds GEMINI_API_KEY (gitignored). Without it the tutor runs in simulated mode.
+npm run dev        # http://localhost:3000
 ```
 
-Without a key, the AI tutor runs in built-in simulated "practice mode" and the app still
-works end to end.
+## Commit history
 
-## Success criteria (from spec)
-
-- `npm run dev` serves a working app; `npm run build` compiles with no type errors. _(tsc clean ✅; full build TBD)_
-- A learner can onboard, complete a lesson (all exercise types), see XP/streak/hearts update
-  and persist across reload, run an SRS review, hold an AI conversation (real or simulated),
-  and view their profile.
-- Slang skills are unlocked only at Advanced.
+```
+5158c45 Profile: language editing + log out / switch account, drop reset
+7aed4cb Make the AI tutor fully functional with per-scenario context
+16217d6 Localize UI by native language, fix TTS voice, add fonts + motion
+cd89539 Rework onboarding (auth + languages), warm theme, drop emoji
+bec70f4 Redesign UI from Claude Design (neuro-tone light theme)
+aa92cd4 Add earned XP-based level progression
+779dffd Expand course content and AI scenarios
+6a5d686 Initial commit: Slangy v1 vertical slice
+```
