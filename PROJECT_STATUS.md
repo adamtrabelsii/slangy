@@ -214,14 +214,23 @@ npm install
 # .env already holds GEMINI_API_KEY (gitignored). Without it the tutor runs in simulated mode.
 npm run dev        # http://localhost:3000
 npm test           # vitest — lib/ logic tests
-npm run lint        # next lint
-npx tsc --noEmit    # typecheck
-npm run build       # production build
+npm run lint       # next lint
+npx tsc --noEmit   # typecheck
+npm run build      # production build
 ```
 
 ## Commit history
 
 ```
+7564af4 test: add Vitest unit tests and GitHub Actions CI
+932e472 fix: improve keyboard focus visibility and text contrast
+9faafbc feat: deepen course content and add more AI scenarios
+1888328 feat: add English and Arabic target-language courses
+2649a7e feat: pre-fill onboarding auth after a soft log-out
+8aef4c4 feat: localize AI tutor correction notes to the learner's native language
+6ead8e3 fix: configure ESLint and resolve all lint/build warnings
+58d5226 Add multi-language course engine (9 target languages)
+a544b7b Update PROJECT_STATUS.md to reflect current state
 5158c45 Profile: language editing + log out / switch account, drop reset
 7aed4cb Make the AI tutor fully functional with per-scenario context
 16217d6 Localize UI by native language, fix TTS voice, add fonts + motion
@@ -231,3 +240,56 @@ aa92cd4 Add earned XP-based level progression
 779dffd Expand course content and AI scenarios
 6a5d686 Initial commit: Slangy v1 vertical slice
 ```
+
+## Roadmap to 100%
+
+Prioritized by impact — what's most worth doing next, and why.
+
+1. **Real backend + accounts.** Everything lives in `localStorage` under one device; there's no
+   real auth, no server-side persistence, and no cross-device sync. This is the single biggest
+   gap between "demo" and "product" — a learner who clears their browser loses everything. A
+   lightweight backend (Supabase/Postgres + real auth) would unlock sync, account recovery, and
+   eventually social/leaderboard features. **Why first:** every other improvement (tests,
+   polish, content) is moot if a user can't keep their progress.
+2. **Component/integration tests.** This pass added 35 logic-only Vitest tests, but there's zero
+   coverage on the actual React pages — the onboarding flow, lesson player, and chat UI are the
+   most complex and most user-facing code, and a regression there wouldn't be caught by CI.
+   Add jsdom + React Testing Library for the critical paths (complete onboarding → land on home;
+   answer a lesson exercise → see correct/incorrect state; SRS review grading). **Why second:**
+   it's the most direct way to make the "test/CI is real" claim from this pass actually hold for
+   the UI, not just `lib/`.
+3. **Full RTL audit.** `LangSync` flips `document.dir` for Arabic learners, but physical
+   spacing utilities (`ml-`, `mr-`, `pl-`, `pr-`) throughout the components haven't been swapped
+   for logical ones (`ms-`, `me-`, `ps-`, `pe-`), so layouts likely look subtly wrong (icons on
+   the wrong side, asymmetric padding) for Arabic-native learners. Needs a real RTL browser
+   session to verify, not blind utility swaps. **Why high:** Arabic is one of 11 supported
+   native languages and this is a first-class, not edge-case, experience.
+4. **AI tutor scenario coverage beyond Spanish.** The Gemini system prompt and all 11
+   scenarios are Spanish-only regardless of the learner's chosen target language — someone
+   learning German, Japanese, or Arabic gets no AI conversation practice at all. Generalizing
+   `lib/gemini.ts`'s prompt to any target language (parameterized by `learnTarget`, with
+   scenario setups already mostly language-agnostic in spirit) would make the tutor a real
+   differentiator for every course, not just Spanish. **Why high:** it's one of the app's three
+   stated differentiators in the README, but only works for ~9% of the language-pair matrix.
+5. **Course depth parity.** Spanish has 4 units/13 skills; the five "mid-depth" courses
+   (French/Italian/German/Portuguese/English) now have 3 units each after this pass; Czech/
+   Russian/Chinese/Japanese/Arabic are still greetings-and-numbers-only. Growing those five to
+   Spanish's depth (more units: shopping, work, hobbies, emergencies) is mechanical
+   (vocab-driven engine generates the rest) but time-consuming. **Why medium:** real but
+   bounded work — the engine already supports it, it just needs content authored.
+6. **Security/privacy review of the Gemini integration.** `/api/chat` accepts `learnFrom`,
+   `level`, `scenarioId`, and `history` from the client with light validation (scenario id
+   checked, history filtered/truncated) but no rate limiting — a single API key shared across
+   all users could be exhausted by one abusive client. Worth a rate limiter (even a simple
+   in-memory/IP-based one) before this goes anywhere near production traffic. **Why medium:**
+   not exploitable for data exposure today, but a real cost/availability risk once deployed.
+7. **Deploy + observability.** No deployment target is configured yet (Vercel is the natural
+   fit given the stack). Once there's a real backend (#1), add basic error tracking (Sentry or
+   similar) and uptime monitoring — right now a production failure would be silent.
+   **Why lower:** deploying a still-local-only, unauthenticated app mostly just moves the demo
+   online; more valuable once #1 lands.
+8. **Performance pass.** Not measured yet — `npm run build`'s First Load JS sizes (87 KB
+   shared, up to 145 KB on `/onboarding`) are reasonable for a Next.js app but haven't been
+   profiled with Lighthouse or checked against Core Web Vitals on a real device. **Why
+   lowest:** no evidence yet of an actual performance problem; worth measuring before
+   optimizing blind.
