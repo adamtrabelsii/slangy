@@ -1,5 +1,34 @@
 # Worklog
 
+## 2026-06-23 — Automated tests + CI
+
+The project had zero tests and no CI. Added both rather than just one, since a CI workflow
+with nothing to run in it isn't a real gate.
+
+- Installed `vitest` and added `vitest.config.ts` (Node environment, `@` path alias matching
+  `tsconfig.json`). Deliberately scoped to logic-only tests — no jsdom/React Testing Library —
+  since the highest-confidence, fastest-to-verify coverage for this pass is `lib/`, and
+  component tests would need visual/interaction verification this environment can't do well.
+- `lib/text.test.ts`: `normalize`/`matchesAny` (accent/punctuation/case-insensitive answer
+  matching) and `shuffle` (same elements, no mutation).
+- `lib/srs.test.ts`: SM-2 scheduling — `newCard` defaults, the ease floor never going below 1.3
+  even after repeated lapses, interval growth across consecutive "good" grades, and
+  `dueCards`/`countDue` filtering + sort order.
+- `lib/types.test.ts`: `levelForXp` threshold crossings, `levelAtLeast`, `nextLevel`, `maxLevel`.
+- `lib/content/index.test.ts`: registry integrity directly exercising this session's course
+  additions — every selectable language has a real course, every item id is namespaced by its
+  course's target language, no duplicate item ids across the whole registry, every item has an
+  English gloss fallback.
+- `lib/content/generate.test.ts`: `glossOf` native-language lookup + English fallback,
+  `lessonCount` grouping, and `lessonsForSkill` producing at least one exercise per item with
+  valid choice counts.
+- Added `npm test` (`vitest run`) to `package.json`.
+- Added `.github/workflows/ci.yml`: typecheck → lint → test → build on push/PR to `main`.
+  Verified `npm ci` installs cleanly from the committed lockfile (ran it in this environment to
+  confirm before trusting the CI config).
+- Verified `npx tsc --noEmit`, `npm run lint`, `npm test` (35 passing), and `npm run build` all
+  pass clean.
+
 ## 2026-06-23 — Accessibility pass: focus visibility + contrast
 
 Audited for the most common, verifiable a11y gaps (no browser available in this environment,

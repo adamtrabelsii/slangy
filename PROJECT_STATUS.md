@@ -138,7 +138,10 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 - **AI correction tips** are localized to the learner's native language via Gemini; the
   simulated (no-API-key) fallback only has translated tips for en/es/fr/ar and falls back to
   English for the other 7 native languages.
-- **No tests** and no CI yet.
+- **Test coverage is logic-only.** Vitest covers `lib/` (SRS, text matching, level thresholds,
+  course registry, lesson generation) but there are no component/integration tests for the React
+  pages themselves — that would need jsdom + React Testing Library, deliberately deferred to
+  keep this pass's scope to what could be verified headlessly with high confidence.
 
 ## What's next 📋
 
@@ -181,7 +184,14 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   throughout the codebase haven't been swapped for logical `ms-`/`me-`/`ps-`/`pe-` equivalents,
   and tap-target sizing hasn't been audited) — flagged in Decisions & Assumptions below as a
   follow-up since it needs visual verification this environment can't do.
-- [ ] Automated tests + CI; consider deploying (Vercel).
+- [x] Automated tests + CI. Added Vitest (`vitest.config.ts`, Node environment, no DOM/React
+  rendering needed since the tests target pure logic) with 35 tests across `lib/text.test.ts`
+  (answer normalization/matching/shuffle), `lib/srs.test.ts` (SM-2 scheduling: ease floor,
+  interval growth, due sorting), `lib/types.test.ts` (level thresholds), and
+  `lib/content/{index,generate}.test.ts` (course registry integrity — every selectable language
+  has a course, no duplicate item ids, every item has an English gloss fallback — plus
+  `glossOf`/`lessonsForSkill` generation correctness). Added `.github/workflows/ci.yml` running
+  typecheck → lint → test → build on push/PR to `main`.
 - [ ] Future: real auth + DB sync, payments, leaderboards/social, speech-recognition scoring, native mobile.
 
 ## Decisions & Assumptions
@@ -203,6 +213,10 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 npm install
 # .env already holds GEMINI_API_KEY (gitignored). Without it the tutor runs in simulated mode.
 npm run dev        # http://localhost:3000
+npm test           # vitest — lib/ logic tests
+npm run lint        # next lint
+npx tsc --noEmit    # typecheck
+npm run build       # production build
 ```
 
 ## Commit history
