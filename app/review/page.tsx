@@ -20,7 +20,9 @@ export default function ReviewPage() {
   const t = useT();
   const targetName = getLanguage(learnTarget).native;
 
-  // Snapshot the due queue when the session starts.
+  // Snapshot the due queue when the session starts; intentionally not re-derived as
+  // `cards` mutates from grading mid-session, or the queue would shift under the learner.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const session = useMemo<SrsCard[]>(() => dueCards(cards), [hydrated]);
   const [idx, setIdx] = useState(0);
   const [revealed, setRevealed] = useState(false);

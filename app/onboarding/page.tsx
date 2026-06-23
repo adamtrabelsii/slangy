@@ -250,13 +250,13 @@ function AuthStep({
   return (
     <div className="flex flex-1 flex-col">
       <span className="sg-grad-text font-display text-2xl font-900 tracking-tight">Slangy</span>
-      <p className="tagline mt-2">Languages · the way they're actually spoken</p>
+      <p className="tagline mt-2">Languages · the way they&rsquo;re actually spoken</p>
       <h1 className="mt-1 font-display text-[30px] font-900 leading-tight text-sg-ink">
         {mode === "signup" ? "Create your account" : "Welcome back"}
       </h1>
       <p className="mb-5 mt-1 text-sm text-sg-sub">
         {mode === "signup"
-          ? "It's free. Your progress is saved on this device."
+          ? "It&rsquo;s free. Your progress is saved on this device."
           : "Log in to pick up where you left off."}
       </p>
 
@@ -410,7 +410,7 @@ function LevelGoalStep({
       <h1 className="font-display text-[30px] font-900 leading-tight text-sg-ink">
         Where do you start?
       </h1>
-      <p className="mb-4 mt-1 text-sm text-sg-sub">We'll set the right pace and unlock as you climb.</p>
+      <p className="mb-4 mt-1 text-sm text-sg-sub">We&rsquo;ll set the right pace and unlock as you climb.</p>
 
       <p className="section-label mb-3">Your level</p>
       <div className="space-y-2.5">

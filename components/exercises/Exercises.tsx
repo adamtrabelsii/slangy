@@ -48,6 +48,7 @@ function MultipleChoice({
   ex: MultipleChoiceExercise;
   onDone: (c: boolean) => void;
 }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const choices = useMemo(() => shuffle(ex.choices), [ex.id]);
   const [sel, setSel] = useState<string | null>(null);
 
@@ -152,6 +153,7 @@ function WordBank({
   const t = useT();
   const bankInit = useMemo(
     () => shuffle([...ex.answer, ...ex.distractors]).map((w, i) => ({ w, id: i })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ex.id]
   );
   const [bank, setBank] = useState(bankInit);
@@ -215,6 +217,7 @@ function WordBank({
 
 function Listen({ ex, onDone }: { ex: ListenExercise; onDone: (c: boolean) => void }) {
   const t = useT();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const choices = useMemo(() => shuffle(ex.choices), [ex.id]);
   const [sel, setSel] = useState<string | null>(null);
 
@@ -307,12 +310,15 @@ function ChoiceGrid({
 
 function Match({ ex, onDone }: { ex: MatchExercise; onDone: (c: boolean) => void }) {
   const t = useT();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const esList = useMemo(() => shuffle(ex.pairs.map((p) => p.es)), [ex.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const enList = useMemo(() => shuffle(ex.pairs.map((p) => p.en)), [ex.id]);
   const lookup = useMemo(() => {
     const m = new Map<string, string>();
     ex.pairs.forEach((p) => m.set(p.es, p.en));
     return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ex.id]);
 
   const [selEs, setSelEs] = useState<string | null>(null);

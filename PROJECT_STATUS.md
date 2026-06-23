@@ -1,6 +1,6 @@
 # Slangy — Project Status
 
-_Last updated: 2026-06-22_
+_Last updated: 2026-06-23_
 
 ## What this project is
 
@@ -137,6 +137,12 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 
 ## What's next 📋
 
+- [x] Set up a real lint/build gate — `next lint` was never actually configured (interactive
+  prompt, never run); added `.eslintrc.json` (`next/core-web-vitals`) pinned to
+  eslint@8.57.1 + eslint-config-next matching the Next version, fixed the errors/warnings it
+  surfaced (unescaped entities, font loading via `next/font/google` instead of manual `<link>`,
+  intentional-dependency `useMemo`s annotated with `eslint-disable-next-line`), and bumped
+  Next 14.2.18 → 14.2.35 (patch-only) to close most known CVEs without a 15/16 migration.
 - [ ] Localize AI correction "notes" into the learner's native language (plumb `learnFrom` into `/api/chat`).
 - [ ] Pre-fill name/email on the onboarding auth step after a soft log-out (one-tap re-login).
 - [ ] Build real courses for French / English / Arabic targets (or stub lessons).
@@ -144,6 +150,13 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 - [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).
 - [ ] Automated tests + CI; consider deploying (Vercel).
 - [ ] Future: real auth + DB sync, payments, leaderboards/social, speech-recognition scoring, native mobile.
+
+## Decisions & Assumptions
+
+- **Next.js stayed on the 14.x line** (14.2.18 → 14.2.35) rather than jumping to 15/16. The
+  remaining `npm audit` findings (RSC/middleware DoS, cache-poisoning classes) require a major
+  upgrade and don't have a realistic exploit path here — this app has one trivial API route and
+  no middleware. Revisit when doing the broader test/CI pass.
 
 ## How to run
 
