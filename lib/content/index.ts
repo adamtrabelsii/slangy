@@ -11,6 +11,8 @@ import { CZECH } from "./courses/czech";
 import { RUSSIAN } from "./courses/russian";
 import { CHINESE } from "./courses/chinese";
 import { JAPANESE } from "./courses/japanese";
+import { ENGLISH } from "./courses/english";
+import { ARABIC } from "./courses/arabic";
 
 export const COURSES: Partial<Record<LangCode, Course>> = {
   es: SPANISH,
@@ -22,6 +24,8 @@ export const COURSES: Partial<Record<LangCode, Course>> = {
   ru: RUSSIAN,
   zh: CHINESE,
   ja: JAPANESE,
+  en: ENGLISH,
+  ar: ARABIC,
 };
 
 export function getCourse(target: LangCode): Course | undefined {

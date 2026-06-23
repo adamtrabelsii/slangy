@@ -5,9 +5,9 @@ _Last updated: 2026-06-23_
 ## What this project is
 
 **Slangy** is a web-first language-learning app — "Duolingo but better" — with a **vocab-driven,
-multi-language course engine**: 9 target-language courses (Spanish, French, Italian, German,
-Portuguese, Czech, Russian, Chinese, Japanese) whose lessons are **generated** from vocab lists
-and **localized to the learner's native language**. Three differentiators:
+multi-language course engine**: 11 target-language courses (Spanish, French, Italian, German,
+Portuguese, English, Arabic, Czech, Russian, Chinese, Japanese) whose lessons are **generated**
+from vocab lists and **localized to the learner's native language**. Three differentiators:
 
 1. **Real talk, not textbook talk.** Teaches slang, idioms, and colloquialisms — gated to the
    **Advanced** level so learners earn it.
@@ -69,7 +69,7 @@ lib/
 │  ├─ languages.ts        11 selectable languages (LangCode, names, monograms, RTL)
 │  ├─ scenarios.ts        8 AI practice scenarios (Spanish)
 │  └─ courses/            one file per target: spanish, french, italian, german,
-│                         portuguese, czech, russian, chinese, japanese
+│                         portuguese, english, czech, russian, chinese, japanese, arabic
 ```
 
 ## Status: what's done ✅
@@ -96,9 +96,10 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   ([lib/content/generate.ts](lib/content/generate.ts)), so each course works in any native
   language automatically. A registry ([lib/content/index.ts](lib/content/index.ts)) maps each
   target `LangCode` to its `Course`.
-- **9 target courses:** Spanish (4 units, 13 skills, ~80 items incl. slang/idioms), French,
-  Italian, German, Portuguese (each ~2 units, ~45 items with en+es glosses), and foundational
-  Czech / Russian / Chinese / Japanese (greetings + numbers, with romanization).
+- **11 target courses:** Spanish (4 units, 13 skills, ~80 items incl. slang/idioms), French,
+  Italian, German, Portuguese, English (each ~2 units, ~45-50 items with en+es, or for English,
+  es/fr/ar glosses), and foundational Czech / Russian / Chinese / Japanese / Arabic (greetings +
+  numbers, with romanization).
 - **11 selectable languages** (es/en/fr/it/de/pt/ar/cs/ru/zh/ja) for both "speak" and "learn".
 - **8 AI scenarios** (café, directions, market, introductions, doctor, interview, friends, night out).
 
@@ -125,9 +126,10 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
 - **Auth is cosmetic/local.** It accepts any email/password and stores the profile in
   localStorage — no real accounts, sessions, or password checks. "Log out" keeps local progress;
   "switch account" wipes it. Real accounts would need a backend (e.g. Supabase).
-- **Course depth varies.** Spanish is deep; French/Italian/German/Portuguese are ~2 units each;
-  Czech/Russian/Chinese/Japanese are foundational (greetings + numbers). English-as-target has no
-  course yet → shows "coming soon." All are easy to grow: just add vocab to the course file.
+- **Course depth varies.** Spanish is deep; French/Italian/German/Portuguese/English are ~2 units
+  each; Czech/Russian/Chinese/Japanese/Arabic are foundational (greetings + numbers). All 11 target
+  languages now have a real course — no more "coming soon" gate. All are easy to grow: just add
+  vocab to the course file.
 - **Gloss localization is partial.** Glosses exist in English everywhere, Spanish on the new
   courses, and French/German on Spanish; other native languages fall back to English meanings.
 - **The AI tutor is Spanish-only** for now (scenarios + prompt), regardless of the chosen target.
@@ -154,7 +156,12 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   `account` in the store (only `onboarded` flips false), so the onboarding welcome screen now
   detects it, greets the learner by name, defaults to "Log in" with name/email pre-filled, and
   offers "Use a different account" to clear the fields and sign up fresh.
-- [ ] Build real courses for French / English / Arabic targets (or stub lessons).
+- [x] Build real courses for English / Arabic targets (French already existed — `lib/content/courses/french.ts`
+  was a full 2-unit course, the "What's next" note was stale). Added `lib/content/courses/english.ts`
+  (2 units, ~50 items, glossed in es/fr/ar — the term itself isn't a translation, so `gloss.en` is a
+  short clarifying definition instead) and `lib/content/courses/arabic.ts` (foundational greetings +
+  numbers, Arabic script + romanization, mirroring the Czech/Russian pattern). Both registered in
+  `lib/content/index.ts`.
 - [ ] Deeper content per skill; more AI scenarios.
 - [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).
 - [ ] Automated tests + CI; consider deploying (Vercel).

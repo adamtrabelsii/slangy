@@ -1,5 +1,21 @@
 # Worklog
 
+## 2026-06-23 — English and Arabic courses
+
+Checked `lib/content/index.ts` against the "What's next" item "build real courses for
+French/English/Arabic" — French already had a full course (`lib/content/courses/french.ts`,
+2 units), so that part of the backlog note was stale. Built the two genuinely missing ones:
+
+- `lib/content/courses/english.ts`: 2 units (foundations + out-in-the-world), ~50 items
+  covering basics/food/family/travel/numbers/slang. Since the term itself is already English,
+  `gloss.en` is a short clarifying definition rather than a translation, and the real
+  translations live in `es`/`fr`/`ar` (the app's other fully-localized native languages).
+- `lib/content/courses/arabic.ts`: foundational greetings + numbers, Arabic script with a
+  `roman` transliteration field, mirroring the existing Czech/Russian pattern.
+- Registered both in `COURSES` in `lib/content/index.ts`. TTS (`lib/tts.ts`) already had
+  voice preferences for both `en` and `ar`, so spoken playback works without further changes.
+- Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
+
 ## 2026-06-23 — Real lint/build gate
 
 `next lint` had never actually been run — it was still on the unconfigured interactive
