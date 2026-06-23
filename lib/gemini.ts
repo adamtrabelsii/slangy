@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { getLanguage, type LangCode } from "@/lib/content/languages";
 import type { ChatMessage, Level, Scenario, TutorReply } from "@/lib/types";
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
@@ -12,7 +13,8 @@ const LEVEL_GUIDE: Record<Level, string> = {
     "The learner is ADVANCED. Speak naturally and fluently, including idioms and colloquial expressions where they fit the scene.",
 };
 
-function systemPrompt(scenario: Scenario, level: Level): string {
+function systemPrompt(scenario: Scenario, level: Level, learnFrom: LangCode): string {
+  const noteLanguage = getLanguage(learnFrom).name;
   return [
     "You are Lola, a warm, encouraging Spanish conversation tutor inside the Slangy app. You roleplay real-life scenes so an English speaker can practice speaking Spanish.",
     "",
@@ -33,7 +35,7 @@ function systemPrompt(scenario: Scenario, level: Level): string {
     "Set 'correction' whenever the learner's last message has a real problem; otherwise set it to null. You MUST set a correction when:",
     "- They write fully or partly in English → 'fixed' is the natural Spanish way to say it (e.g. original 'I would like a sandwich' → fixed 'Quiero un sándwich', note explaining it). Still reply in Spanish as if they had said it correctly.",
     "- They make a Spanish mistake: wrong verb conjugation (e.g. 'yo querer' → 'yo quiero'), wrong gender/agreement, missing accents on key words, or unnatural phrasing.",
-    "Only correct the single most important issue. 'original' = their text (or the wrong part), 'fixed' = the corrected Spanish, 'note' = a short friendly tip written in English explaining the fix. Do NOT invent mistakes when the Spanish is already correct.",
+    `Only correct the single most important issue. 'original' = their text (or the wrong part), 'fixed' = the corrected Spanish, 'note' = a short friendly tip explaining the fix, written in ${noteLanguage} (the learner's native language) — NOT in Spanish or English unless ${noteLanguage} is one of those. Do NOT invent mistakes when the Spanish is already correct.`,
   ].join("\n");
 }
 
@@ -51,7 +53,10 @@ const responseSchema = {
       properties: {
         original: { type: SchemaType.STRING, description: "The learner's original text." },
         fixed: { type: SchemaType.STRING, description: "The corrected Spanish." },
-        note: { type: SchemaType.STRING, description: "A short friendly tip in English." },
+        note: {
+          type: SchemaType.STRING,
+          description: "A short friendly tip, written in the learner's native language.",
+        },
       },
       required: ["original", "fixed", "note"],
     },
@@ -75,11 +80,12 @@ function toContents(history: ChatMessage[]) {
 export async function askTutor(
   scenario: Scenario,
   level: Level,
-  history: ChatMessage[]
+  history: ChatMessage[],
+  learnFrom: LangCode = "en"
 ): Promise<TutorReply> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) {
-    return simulatedTutor(scenario, level, history);
+    return simulatedTutor(scenario, level, history, learnFrom);
   }
 
   const contents = toContents(history);
@@ -92,7 +98,7 @@ export async function askTutor(
     const genAI = new GoogleGenerativeAI(key);
     const model = genAI.getGenerativeModel({
       model: MODEL,
-      systemInstruction: systemPrompt(scenario, level),
+      systemInstruction: systemPrompt(scenario, level, learnFrom),
       generationConfig: {
         temperature: 0.8,
         // Generous budget: 2.5-flash spends some of this on internal "thinking",
@@ -117,10 +123,10 @@ export async function askTutor(
     }
 
     // Structured output failed for some reason — degrade gracefully.
-    return simulatedTutor(scenario, level, history);
+    return simulatedTutor(scenario, level, history, learnFrom);
   } catch (err) {
     console.error("[askTutor] Gemini call failed:", err);
-    return simulatedTutor(scenario, level, history);
+    return simulatedTutor(scenario, level, history, learnFrom);
   }
 }
 
@@ -154,10 +160,20 @@ const OPENERS: Record<string, string> = {
   nightout: "¡Venga! ¿Qué plan tienes para esta noche?",
 };
 
+// Canned note translations for the simulated (no-API-key) fallback. Falls back to English
+// for native languages without an entry — Gemini handles the rest when a key is present.
+const TRY_IN_SPANISH_NOTE: Record<string, string> = {
+  en: "Try expressing that in Spanish — even a small attempt counts!",
+  es: "Intenta decirlo en español — ¡incluso un pequeño intento cuenta!",
+  fr: "Essaie de le dire en espagnol — même une petite tentative compte !",
+  ar: "حاول أن تقول ذلك بالإسبانية — كل محاولة صغيرة لها قيمتها!",
+};
+
 function simulatedTutor(
   scenario: Scenario,
   _level: Level,
-  history: ChatMessage[]
+  history: ChatMessage[],
+  learnFrom: LangCode = "en"
 ): TutorReply {
   const userTurns = history.filter((m) => m.role === "user");
   if (userTurns.length === 0) {
@@ -191,7 +207,7 @@ function simulatedTutor(
     ? {
         original: last,
         fixed: "Intenta decirlo en español",
-        note: "Try expressing that in Spanish — even a small attempt counts!",
+        note: TRY_IN_SPANISH_NOTE[learnFrom] ?? TRY_IN_SPANISH_NOTE.en,
       }
     : null;
 

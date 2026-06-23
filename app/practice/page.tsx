@@ -28,6 +28,7 @@ const OPENERS: Record<string, string> = {
 export default function PracticePage() {
   const hydrated = useStore((s) => s.hydrated);
   const level = useStore((s) => s.level);
+  const learnFrom = useStore((s) => s.learnFrom);
   const t = useT();
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
@@ -81,16 +82,20 @@ export default function PracticePage() {
     );
   }
 
-  return <Chat scenario={scenario} level={level} onExit={() => setScenario(null)} />;
+  return (
+    <Chat scenario={scenario} level={level} learnFrom={learnFrom} onExit={() => setScenario(null)} />
+  );
 }
 
 function Chat({
   scenario,
   level,
+  learnFrom,
   onExit,
 }: {
   scenario: Scenario;
   level: string;
+  learnFrom: string;
   onExit: () => void;
 }) {
   const t = useT();
@@ -120,6 +125,7 @@ function Chat({
         body: JSON.stringify({
           scenarioId: scenario.id,
           level,
+          learnFrom,
           history: next.map((m) => ({ role: m.role, content: m.content })),
         }),
       });

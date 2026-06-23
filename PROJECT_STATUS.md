@@ -132,7 +132,9 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   courses, and French/German on Spanish; other native languages fall back to English meanings.
 - **The AI tutor is Spanish-only** for now (scenarios + prompt), regardless of the chosen target.
 - **TTS quality depends on the OS** having a voice for the target language installed.
-- **AI correction tips are written in English** regardless of the learner's native language.
+- **AI correction tips** are localized to the learner's native language via Gemini; the
+  simulated (no-API-key) fallback only has translated tips for en/es/fr/ar and falls back to
+  English for the other 7 native languages.
 - **No tests** and no CI yet.
 
 ## What's next 📋
@@ -143,7 +145,11 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   surfaced (unescaped entities, font loading via `next/font/google` instead of manual `<link>`,
   intentional-dependency `useMemo`s annotated with `eslint-disable-next-line`), and bumped
   Next 14.2.18 → 14.2.35 (patch-only) to close most known CVEs without a 15/16 migration.
-- [ ] Localize AI correction "notes" into the learner's native language (plumb `learnFrom` into `/api/chat`).
+- [x] Localize AI correction "notes" into the learner's native language — `learnFrom` is now
+  plumbed from the practice page → `/api/chat` → `askTutor`; Gemini is instructed to write
+  `correction.note` in the learner's native language, and the simulated (no-API-key) fallback
+  has translated canned notes for en/es/fr/ar (other native languages fall back to English in
+  simulated mode only — Gemini handles all 11 when a key is present).
 - [ ] Pre-fill name/email on the onboarding auth step after a soft log-out (one-tap re-login).
 - [ ] Build real courses for French / English / Arabic targets (or stub lessons).
 - [ ] Deeper content per skill; more AI scenarios.

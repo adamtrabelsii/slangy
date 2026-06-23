@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { askTutor } from "@/lib/gemini";
 import { getScenario } from "@/lib/content/scenarios";
+import { LANGUAGES, type LangCode } from "@/lib/content/languages";
 import type { ChatMessage, Level } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -20,6 +21,9 @@ export async function POST(req: NextRequest) {
   }
 
   const level: Level = body?.level ?? "beginner";
+  const learnFrom: LangCode = LANGUAGES.some((l) => l.code === body?.learnFrom)
+    ? body.learnFrom
+    : "en";
   const history: ChatMessage[] = Array.isArray(body?.history) ? body.history : [];
 
   // Guard against runaway histories.
@@ -27,6 +31,6 @@ export async function POST(req: NextRequest) {
     (m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
   );
 
-  const reply = await askTutor(scenario, level, trimmed);
+  const reply = await askTutor(scenario, level, trimmed, learnFrom);
   return NextResponse.json(reply);
 }

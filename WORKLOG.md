@@ -23,3 +23,18 @@ prompt, so the project had no working ESLint gate despite the build claiming to 
   as a deliberate decision in `PROJECT_STATUS.md` (this app has no middleware and one trivial
   API route, so the residual RSC/middleware classes don't have a real exploit surface here).
 - Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
+
+## 2026-06-23 — Localize AI correction notes
+
+The Gemini tutor's correction `note` was hardcoded to English regardless of the learner's
+native language. Plumbed `learnFrom` end to end:
+
+- `app/practice/page.tsx` reads `learnFrom` from the store and sends it in the `/api/chat`
+  request body.
+- `app/api/chat/route.ts` validates it against `LANGUAGES` (defaulting to `en`) and forwards
+  it to `askTutor`.
+- `lib/gemini.ts`: `systemPrompt` now tells Gemini to write `correction.note` in the learner's
+  native language by name; the no-API-key `simulatedTutor` fallback has translated canned
+  notes for en/es/fr/ar (the four languages the UI itself is localized into) and falls back to
+  English for the rest — real Gemini calls cover all 11 native languages.
+- Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
