@@ -1,5 +1,20 @@
 # Worklog
 
+## 2026-06-23 — Deepen course content + more AI scenarios
+
+- Added a "Unit 3 · Everyday Life" to French, Italian, German, Portuguese, and English courses:
+  two new skills each (Time & Weather, Feelings & Health), ~15 vocab items per course, same
+  authoring pattern as existing units (`lib/content/courses/{french,italian,german,portuguese,english}.ts`).
+- Added 3 AI practice scenarios to `lib/content/scenarios.ts`: hotel check-in (beginner),
+  buying clothes (beginner), and a phone reservation call (advanced, no visual cues) —
+  bringing the total from 8 to 11 and rounding out the level/topic spread.
+- While wiring openers for the new scenarios, noticed the scripted "first line" for each
+  scenario was hardcoded into two separate `OPENERS` dictionaries (`lib/gemini.ts` and
+  `app/practice/page.tsx`) that had to be kept in sync by hand. Added `opener` to the
+  `Scenario` type and moved every opener into `lib/content/scenarios.ts` as the single source
+  of truth; both consumers now read `scenario.opener`.
+- Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
+
 ## 2026-06-23 — English and Arabic courses
 
 Checked `lib/content/index.ts` against the "What's next" item "build real courses for

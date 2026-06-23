@@ -14,17 +14,6 @@ interface Msg {
   correction?: { original: string; fixed: string; note: string } | null;
 }
 
-const OPENERS: Record<string, string> = {
-  cafe: "¡Hola! Bienvenido. ¿Qué te pongo hoy?",
-  directions: "¡Hola! Claro, ¿a dónde quieres ir?",
-  market: "¡Buenas! Tengo fruta fresquísima. ¿Qué te llevas?",
-  friends: "¡Eyy! ¿Qué onda, tío? ¿Todo guay?",
-  nightout: "¡Venga! ¿Qué plan tienes para esta noche?",
-  introductions: "¡Hola! Mucho gusto. ¿Cómo te llamas?",
-  doctor: "Buenos días, pase y siéntese. ¿Qué le pasa hoy?",
-  interview: "Buenas tardes, gracias por venir. Cuénteme un poco sobre usted.",
-};
-
 export default function PracticePage() {
   const hydrated = useStore((s) => s.hydrated);
   const level = useStore((s) => s.level);
@@ -100,7 +89,7 @@ function Chat({
 }) {
   const t = useT();
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: OPENERS[scenario.id] ?? "¡Hola! ¿Empezamos?" },
+    { role: "assistant", content: scenario.opener },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

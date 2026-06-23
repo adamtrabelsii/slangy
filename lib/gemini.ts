@@ -91,7 +91,7 @@ export async function askTutor(
   const contents = toContents(history);
   // Nothing for the model to respond to yet — return the scripted opener.
   if (contents.length === 0) {
-    return { reply: OPENERS[scenario.id] ?? "¡Hola! ¿Empezamos?", correction: null, simulated: false };
+    return { reply: scenario.opener, correction: null, simulated: false };
   }
 
   try {
@@ -149,17 +149,6 @@ function safeParse(text: string): any | null {
 
 // ---- Local fallback so the app fully works without an API key -----------
 
-const OPENERS: Record<string, string> = {
-  cafe: "¡Hola! Bienvenido. ¿Qué te pongo hoy?",
-  directions: "¡Hola! Claro, ¿a dónde quieres ir?",
-  market: "¡Buenas! Tengo fruta fresquísima. ¿Qué te llevas?",
-  introductions: "¡Hola! Mucho gusto. ¿Cómo te llamas?",
-  doctor: "Buenos días, pase y siéntese. ¿Qué le pasa hoy?",
-  interview: "Buenas tardes, gracias por venir. Cuénteme un poco sobre usted.",
-  friends: "¡Eyy! ¿Qué onda, tío? ¿Todo guay?",
-  nightout: "¡Venga! ¿Qué plan tienes para esta noche?",
-};
-
 // Canned note translations for the simulated (no-API-key) fallback. Falls back to English
 // for native languages without an entry — Gemini handles the rest when a key is present.
 const TRY_IN_SPANISH_NOTE: Record<string, string> = {
@@ -178,7 +167,7 @@ function simulatedTutor(
   const userTurns = history.filter((m) => m.role === "user");
   if (userTurns.length === 0) {
     return {
-      reply: OPENERS[scenario.id] ?? "¡Hola! ¿Empezamos?",
+      reply: scenario.opener,
       correction: null,
       simulated: true,
     };

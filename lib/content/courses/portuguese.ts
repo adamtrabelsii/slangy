@@ -76,6 +76,27 @@ const slang: VocabItem[] = [
   v("massa", "que massa!", "how cool!", "¡qué guay!", { slang: true }),
 ];
 
+const timeWeather: VocabItem[] = [
+  v("hoje", "hoje", "today", "hoy"),
+  v("amanha", "amanhã", "tomorrow", "mañana"),
+  v("ontem", "ontem", "yesterday", "ayer"),
+  v("que-horas-sao", "que horas são?", "what time is it?", "¿qué hora es?"),
+  v("tempo-bom", "o tempo está bom", "the weather is nice", "hace buen tiempo"),
+  v("esta-chovendo", "está chovendo", "it's raining", "está lloviendo"),
+  v("esta-frio", "está frio", "it's cold", "hace frío"),
+  v("esta-calor", "está calor", "it's hot", "hace calor"),
+];
+
+const feelings: VocabItem[] = [
+  v("cansado", "estou cansado", "I'm tired", "estoy cansado"),
+  v("feliz", "estou feliz", "I'm happy", "estoy feliz"),
+  v("triste", "estou triste", "I'm sad", "estoy triste"),
+  v("dor-de-cabeca", "estou com dor de cabeça", "I have a headache", "tengo dolor de cabeza"),
+  v("me-sentindo-mal", "estou me sentindo mal", "I feel sick", "me siento mal"),
+  v("melhoras", "melhoras", "get well soon", "que te mejores"),
+  v("se-cuida", "se cuida", "take care", "cuídate"),
+];
+
 export const PORTUGUESE: Course = {
   target: "pt",
   units: [
@@ -97,6 +118,15 @@ export const PORTUGUESE: Course = {
         { id: "pt-travel", title: "Getting Around", blurb: "Directions & transport", icon: "MapPin", color: "#FB7427", minLevel: "intermediate", items: travel },
         { id: "pt-numbers", title: "Numbers & Prices", blurb: "Count and pay", icon: "ShoppingBag", color: "#F59E0B", minLevel: "beginner", items: numbers },
         { id: "pt-slang", title: "Real Talk: Slang", blurb: "How locals actually speak", icon: "MessageSquareText", color: "#C2410C", minLevel: "advanced", slang: true, items: slang },
+      ],
+    },
+    {
+      id: "pt-u3",
+      title: "Unit 3 · Everyday Life",
+      description: "Talk about time, weather, and how you feel.",
+      skills: [
+        { id: "pt-time-weather", title: "Time & Weather", blurb: "Today, tomorrow, and the forecast", icon: "Clock", color: "#F59E0B", minLevel: "beginner", items: timeWeather },
+        { id: "pt-feelings", title: "Feelings & Health", blurb: "How you're doing, for real", icon: "Smile", color: "#EA580C", minLevel: "intermediate", items: feelings },
       ],
     },
   ],

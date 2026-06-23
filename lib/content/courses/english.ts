@@ -87,6 +87,27 @@ const slang: VocabItem[] = [
   v("no-worries", "no worries", "a casual 'it's fine'", "no hay problema", "pas de soucis", "لا بأس", { slang: true }),
 ];
 
+const timeWeather: VocabItem[] = [
+  v("today", "today", "the current day", "hoy", "aujourd'hui", "اليوم"),
+  v("tomorrow", "tomorrow", "the day after today", "mañana", "demain", "غداً"),
+  v("yesterday", "yesterday", "the day before today", "ayer", "hier", "أمس"),
+  v("what-time-is-it", "what time is it?", "asking for the current time", "¿qué hora es?", "quelle heure est-il ?", "كم الساعة؟"),
+  v("nice-weather", "the weather is nice", "describing good weather", "hace buen tiempo", "il fait beau", "الجو جميل"),
+  v("its-raining", "it's raining", "rain is falling", "está lloviendo", "il pleut", "إنها تمطر"),
+  v("its-cold", "it's cold", "a low temperature", "hace frío", "il fait froid", "الجو بارد"),
+  v("its-hot", "it's hot", "a high temperature", "hace calor", "il fait chaud", "الجو حار"),
+];
+
+const feelings: VocabItem[] = [
+  v("im-tired", "I'm tired", "lacking energy", "estoy cansado", "je suis fatigué", "أنا متعب"),
+  v("im-happy", "I'm happy", "feeling joy", "estoy feliz", "je suis content", "أنا سعيد"),
+  v("im-sad", "I'm sad", "feeling down", "estoy triste", "je suis triste", "أنا حزين"),
+  v("headache", "I have a headache", "head pain", "tengo dolor de cabeza", "j'ai mal à la tête", "عندي صداع"),
+  v("feel-sick", "I feel sick", "feeling unwell", "me siento mal", "je me sens malade", "أشعر بالمرض"),
+  v("get-well-soon", "get well soon", "a wish for recovery", "que te mejores", "bon rétablissement", "شفاك الله"),
+  v("take-care", "take care", "a caring farewell", "cuídate", "prends soin de toi", "خذ بالك من نفسك"),
+];
+
 export const ENGLISH: Course = {
   target: "en",
   units: [
@@ -108,6 +129,15 @@ export const ENGLISH: Course = {
         { id: "en-travel", title: "Getting Around", blurb: "Directions & transport", icon: "MapPin", color: "#FB7427", minLevel: "intermediate", items: travel },
         { id: "en-numbers", title: "Numbers & Prices", blurb: "Count and pay", icon: "ShoppingBag", color: "#F59E0B", minLevel: "beginner", items: numbers },
         { id: "en-slang", title: "Real Talk: Slang", blurb: "How locals actually speak", icon: "MessageSquareText", color: "#C2410C", minLevel: "advanced", slang: true, items: slang },
+      ],
+    },
+    {
+      id: "en-u3",
+      title: "Unit 3 · Everyday Life",
+      description: "Talk about time, weather, and how you feel.",
+      skills: [
+        { id: "en-time-weather", title: "Time & Weather", blurb: "Today, tomorrow, and the forecast", icon: "Clock", color: "#F59E0B", minLevel: "beginner", items: timeWeather },
+        { id: "en-feelings", title: "Feelings & Health", blurb: "How you're doing, for real", icon: "Smile", color: "#EA580C", minLevel: "intermediate", items: feelings },
       ],
     },
   ],

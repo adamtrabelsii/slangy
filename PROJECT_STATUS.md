@@ -67,7 +67,7 @@ lib/
 │  ├─ index.ts            course registry (target → Course) + getCourse/getSkill/getItem/hasCourse
 │  ├─ generate.ts         generates localized lessons/exercises from a skill's vocab
 │  ├─ languages.ts        11 selectable languages (LangCode, names, monograms, RTL)
-│  ├─ scenarios.ts        8 AI practice scenarios (Spanish)
+│  ├─ scenarios.ts        11 AI practice scenarios (Spanish)
 │  └─ courses/            one file per target: spanish, french, italian, german,
 │                         portuguese, english, czech, russian, chinese, japanese, arabic
 ```
@@ -101,7 +101,8 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   es/fr/ar glosses), and foundational Czech / Russian / Chinese / Japanese / Arabic (greetings +
   numbers, with romanization).
 - **11 selectable languages** (es/en/fr/it/de/pt/ar/cs/ru/zh/ja) for both "speak" and "learn".
-- **8 AI scenarios** (café, directions, market, introductions, doctor, interview, friends, night out).
+- **11 AI scenarios** (café, directions, market, introductions, doctor, interview, friends, night
+  out, hotel check-in, clothes shopping, phone reservation).
 
 ### Systems
 - **Earned level progression** — levels earned from total XP (Intermediate @ 50, Advanced @ 150);
@@ -162,7 +163,12 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   short clarifying definition instead) and `lib/content/courses/arabic.ts` (foundational greetings +
   numbers, Arabic script + romanization, mirroring the Czech/Russian pattern). Both registered in
   `lib/content/index.ts`.
-- [ ] Deeper content per skill; more AI scenarios.
+- [x] Deeper content per skill; more AI scenarios. Added a "Unit 3 · Everyday Life" (Time &
+  Weather + Feelings & Health skills, ~15 items each) to French, Italian, German, Portuguese,
+  and English. Added 3 AI scenarios (hotel check-in, clothes shopping, phone reservation) on
+  top of the existing 8, spanning beginner→advanced. Also deduplicated the scenario opener
+  lines that had drifted into two separate hardcoded dictionaries (`lib/gemini.ts` and
+  `app/practice/page.tsx`) into a single `Scenario.opener` field in `lib/content/scenarios.ts`.
 - [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).
 - [ ] Automated tests + CI; consider deploying (Vercel).
 - [ ] Future: real auth + DB sync, payments, leaderboards/social, speech-recognition scoring, native mobile.

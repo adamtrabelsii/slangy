@@ -191,6 +191,8 @@ export interface Scenario {
   slang?: boolean;
   /** System framing for the tutor. */
   setup: string;
+  /** The tutor's scripted first line, shown before any model/API call. */
+  opener: string;
 }
 
 export interface TutorReply {

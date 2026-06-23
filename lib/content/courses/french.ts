@@ -77,6 +77,27 @@ const slang: VocabItem[] = [
   v("ca-marche", "ça marche", "works for me / okay", "vale / de acuerdo", { slang: true }),
 ];
 
+const timeWeather: VocabItem[] = [
+  v("aujourdhui", "aujourd'hui", "today", "hoy"),
+  v("demain", "demain", "tomorrow", "mañana"),
+  v("hier", "hier", "yesterday", "ayer"),
+  v("quelle-heure", "quelle heure est-il ?", "what time is it?", "¿qué hora es?"),
+  v("il-fait-beau", "il fait beau", "the weather is nice", "hace buen tiempo"),
+  v("il-pleut", "il pleut", "it's raining", "está lloviendo"),
+  v("il-fait-froid", "il fait froid", "it's cold", "hace frío"),
+  v("il-fait-chaud", "il fait chaud", "it's hot", "hace calor"),
+];
+
+const feelings: VocabItem[] = [
+  v("fatigue", "je suis fatigué", "I'm tired", "estoy cansado"),
+  v("content", "je suis content", "I'm happy", "estoy feliz"),
+  v("triste", "je suis triste", "I'm sad", "estoy triste"),
+  v("mal-tete", "j'ai mal à la tête", "I have a headache", "tengo dolor de cabeza"),
+  v("malade", "je me sens malade", "I feel sick", "me siento mal"),
+  v("retablissement", "bon rétablissement", "get well soon", "que te mejores"),
+  v("prends-soin", "prends soin de toi", "take care", "cuídate"),
+];
+
 export const FRENCH: Course = {
   target: "fr",
   units: [
@@ -98,6 +119,15 @@ export const FRENCH: Course = {
         { id: "fr-travel", title: "Getting Around", blurb: "Directions & transport", icon: "MapPin", color: "#FB7427", minLevel: "intermediate", items: travel },
         { id: "fr-numbers", title: "Numbers & Prices", blurb: "Count and pay", icon: "ShoppingBag", color: "#F59E0B", minLevel: "beginner", items: numbers },
         { id: "fr-slang", title: "Real Talk: Slang", blurb: "How locals actually speak", icon: "MessageSquareText", color: "#C2410C", minLevel: "advanced", slang: true, items: slang },
+      ],
+    },
+    {
+      id: "fr-u3",
+      title: "Unit 3 · Everyday Life",
+      description: "Talk about time, weather, and how you feel.",
+      skills: [
+        { id: "fr-time-weather", title: "Time & Weather", blurb: "Today, tomorrow, and the forecast", icon: "Clock", color: "#F59E0B", minLevel: "beginner", items: timeWeather },
+        { id: "fr-feelings", title: "Feelings & Health", blurb: "How you're doing, for real", icon: "Smile", color: "#EA580C", minLevel: "intermediate", items: feelings },
       ],
     },
   ],
