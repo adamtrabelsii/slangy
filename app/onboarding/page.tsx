@@ -40,12 +40,15 @@ const STEPS = 5;
 export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useStore((s) => s.completeOnboarding);
+  // After a soft log-out, the store keeps the account (only `onboarded` flips to false) so
+  // a returning learner can be greeted by name and re-log in with one tap.
+  const previousAccount = useStore((s) => s.account);
 
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
-  const [mode, setMode] = useState<"signup" | "login">("signup");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [mode, setMode] = useState<"signup" | "login">(previousAccount ? "login" : "signup");
+  const [name, setName] = useState(previousAccount?.name ?? "");
+  const [email, setEmail] = useState(previousAccount?.email ?? "");
   const [password, setPassword] = useState("");
   const [learnFrom, setLearnFrom] = useState<LangCode>("en");
   const [learnTarget, setLearnTarget] = useState<LangCode>("es");
@@ -92,28 +95,42 @@ export default function OnboardingPage() {
           <MessageCircle size={30} />
         </motion.div>
 
-        <HandWrittenTitle title="Slangy" subtitle="Languages, the way they're actually spoken" />
+        <HandWrittenTitle
+          title="Slangy"
+          subtitle={
+            previousAccount
+              ? `Welcome back, ${previousAccount.name}`
+              : "Languages, the way they're actually spoken"
+          }
+        />
 
         <motion.button
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4, duration: 0.6 }}
-          onClick={() => setStarted(true)}
+          onClick={() => {
+            setMode(previousAccount ? "login" : "signup");
+            setStarted(true);
+          }}
           className="btn-primary mt-2 h-14 w-full text-base"
         >
-          Get started <ArrowRight size={18} />
+          {previousAccount ? "Log in" : "Get started"} <ArrowRight size={18} />
         </motion.button>
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.7, duration: 0.6 }}
           onClick={() => {
-            setMode("login");
+            if (previousAccount) {
+              setName("");
+              setEmail("");
+            }
+            setMode(previousAccount ? "signup" : "login");
             setStarted(true);
           }}
           className="mt-3 text-sm font-bold text-sg-sub"
         >
-          I already have an account
+          {previousAccount ? "Use a different account" : "I already have an account"}
         </motion.button>
       </div>
     );

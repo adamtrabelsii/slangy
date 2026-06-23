@@ -150,7 +150,10 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   `correction.note` in the learner's native language, and the simulated (no-API-key) fallback
   has translated canned notes for en/es/fr/ar (other native languages fall back to English in
   simulated mode only — Gemini handles all 11 when a key is present).
-- [ ] Pre-fill name/email on the onboarding auth step after a soft log-out (one-tap re-login).
+- [x] Pre-fill name/email on the onboarding auth step after a soft log-out — `logout()` keeps
+  `account` in the store (only `onboarded` flips false), so the onboarding welcome screen now
+  detects it, greets the learner by name, defaults to "Log in" with name/email pre-filled, and
+  offers "Use a different account" to clear the fields and sign up fresh.
 - [ ] Build real courses for French / English / Arabic targets (or stub lessons).
 - [ ] Deeper content per skill; more AI scenarios.
 - [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).

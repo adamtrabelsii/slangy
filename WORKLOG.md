@@ -24,6 +24,19 @@ prompt, so the project had no working ESLint gate despite the build claiming to 
   API route, so the residual RSC/middleware classes don't have a real exploit surface here).
 - Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
 
+## 2026-06-23 — Pre-fill auth after soft log-out
+
+`logout()` in `lib/store.ts` only flips `onboarded` to `false` and deliberately keeps `account`
+(that's how progress survives a soft log-out), so the data needed for one-tap re-login was
+already there — the onboarding screen just never used it.
+
+- `app/onboarding/page.tsx` reads the store's `account` as `previousAccount` and seeds the
+  `name`/`email` state and default `mode` ("login") from it.
+- The pre-auth welcome screen now greets a returning learner by name, swaps the primary CTA to
+  "Log in", and offers "Use a different account" (clears the pre-filled fields, switches to
+  sign-up) instead of the generic "Get started" / "I already have an account" pair.
+- Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
+
 ## 2026-06-23 — Localize AI correction notes
 
 The Gemini tutor's correction `note` was hardcoded to English regardless of the learner's
