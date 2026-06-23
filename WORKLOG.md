@@ -1,5 +1,31 @@
 # Worklog
 
+## 2026-06-23 — Accessibility pass: focus visibility + contrast
+
+Audited for the most common, verifiable a11y gaps (no browser available in this environment,
+so anything needing visual/screen-reader confirmation was deferred rather than guessed at):
+
+- `app/globals.css`: added a global `:focus-visible` outline. A few elements suppress the
+  native focus ring via Tailwind's `outline-none` (the `.field` input style, the practice chat
+  textarea, the exercise free-text textarea) without providing any replacement, which left
+  keyboard users with zero focus indicator on those controls.
+- `app/onboarding/page.tsx`: the avatar-picker swatches set an inline `style.outline` to show
+  the *selected* swatch, which had the side effect of permanently overriding `outline: none`
+  on every other swatch — silently cancelling the new global focus-visible rule for them.
+  Switched the selection indicator to `box-shadow` (frees up `outline` for focus) and added
+  `aria-pressed` so screen readers announce the selection state (the buttons had no text
+  content, just a color swatch).
+- `components/TabBar.tsx`: added `aria-current="page"` to the active tab link.
+- `tailwind.config.ts`: `sg.light` (`#B8A698`) measured at ~2.1:1 contrast against the app's
+  cream background — well under WCAG AA (4.5:1 for normal text) despite being used for real
+  copy (placeholders, hint text, section labels) rather than pure decoration. Darkened to
+  `#86715F` (~4.2:1).
+- Verified `npx tsc --noEmit`, `npm run lint`, and `npm run build` all pass clean.
+- Did NOT attempt a full RTL audit (physical `ml-`/`mr-`/`pl-`/`pr-` → logical `ms-`/`me-`
+  utilities) or a tap-target sizing sweep — both need visual verification in an actual RTL
+  browser session, which isn't possible headless. Documented as a follow-up in
+  `PROJECT_STATUS.md` rather than making blind changes across dozens of call sites.
+
 ## 2026-06-23 — Deepen course content + more AI scenarios
 
 - Added a "Unit 3 · Everyday Life" to French, Italian, German, Portuguese, and English courses:

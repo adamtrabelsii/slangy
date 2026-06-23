@@ -537,10 +537,10 @@ function ProfileStep({
             className="h-12 w-12 rounded-2xl transition-transform active:scale-95"
             style={{
               background: a.grad,
-              outline: avatar === a.id ? "3px solid var(--sg-primary)" : "none",
-              outlineOffset: "2px",
+              boxShadow: avatar === a.id ? "0 0 0 3px var(--sg-primary)" : "none",
             }}
             aria-label={`Avatar ${a.id}`}
+            aria-pressed={avatar === a.id}
           />
         ))}
       </div>

@@ -18,7 +18,10 @@ const config: Config = {
           ember: "#C2410C",
           ink: "#2B1A12",
           sub: "#8A7363",
-          light: "#B8A698",
+          // Darkened from #B8A698 — the original failed WCAG AA contrast (~2.1:1) against the
+          // cream background even though it's used for real copy (placeholders, hints, labels),
+          // not just decoration. This gets to ~4.2:1.
+          light: "#86715F",
           line: "#F0E2D6",
           success: "#0E9E6E",
           danger: "#E0533F",

@@ -29,6 +29,7 @@ export function TabBar() {
             <Link
               key={tab.href}
               href={tab.href}
+              aria-current={active ? "page" : undefined}
               className="flex flex-col items-center gap-1"
               style={{ color: active ? "var(--sg-primary-deep)" : "#B8A698" }}
             >

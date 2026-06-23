@@ -169,7 +169,18 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   top of the existing 8, spanning beginner→advanced. Also deduplicated the scenario opener
   lines that had drifted into two separate hardcoded dictionaries (`lib/gemini.ts` and
   `app/practice/page.tsx`) into a single `Scenario.opener` field in `lib/content/scenarios.ts`.
-- [ ] Accessibility & mobile polish pass (focus states, contrast, RTL layout edge cases).
+- [x] Accessibility & mobile polish pass, first cut: added a global `:focus-visible` outline
+  (several elements were suppressing the native focus ring via `outline-none` with nothing in
+  its place, e.g. the chat input and exercise textareas); fixed the avatar-picker buttons (an
+  inline `outline: none` was silently cancelling keyboard focus, and they had no pressed state
+  — added `aria-pressed` and switched the selection indicator to `box-shadow`); added
+  `aria-current="page"` to the active tab; darkened `sg-light` from `#B8A698` to `#86715F`
+  (~2.1:1 → ~4.2:1 contrast on the cream background — it's used for real copy like placeholders
+  and hints, not just decoration). **Not done**: a full RTL layout audit (the app already
+  flips `dir` for Arabic via `LangSync`, but physical `ml-`/`mr-`/`pl-`/`pr-` utilities
+  throughout the codebase haven't been swapped for logical `ms-`/`me-`/`ps-`/`pe-` equivalents,
+  and tap-target sizing hasn't been audited) — flagged in Decisions & Assumptions below as a
+  follow-up since it needs visual verification this environment can't do.
 - [ ] Automated tests + CI; consider deploying (Vercel).
 - [ ] Future: real auth + DB sync, payments, leaderboards/social, speech-recognition scoring, native mobile.
 
@@ -179,6 +190,12 @@ Verified throughout: `npx tsc --noEmit` clean and `npm run build` green (8/8 rou
   remaining `npm audit` findings (RSC/middleware DoS, cache-poisoning classes) require a major
   upgrade and don't have a realistic exploit path here — this app has one trivial API route and
   no middleware. Revisit when doing the broader test/CI pass.
+- **RTL layout was not fully audited.** `LangSync` already flips `document.dir` to `rtl` for
+  Arabic-native learners, and the focus/contrast fixes apply regardless of direction, but a full
+  sweep replacing physical Tailwind spacing utilities (`ml-`, `mr-`, `pl-`, `pr-`, `left-`,
+  `right-`) with logical ones (`ms-`, `me-`, `ps-`, `pe-`) needs visual verification in a real
+  RTL browser session, which this autonomous pass couldn't do safely. Left as a flagged
+  follow-up rather than guessing at dozens of blind utility swaps.
 
 ## How to run
 
